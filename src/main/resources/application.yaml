@@ -13,3 +13,12 @@ spring:
 
   flyway:
     enabled: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          public:
+            key: classpath:app.pub
+          private:
+            key: classpath:app.key
