@@ -3,10 +3,12 @@ package com.geovane.e_commerce_api.service;
 import com.geovane.e_commerce_api.dto.request.CreateCategoryRequest;
 import com.geovane.e_commerce_api.dto.response.CategoryResponse;
 import com.geovane.e_commerce_api.exception.ResourceAlreadyExistsException;
+import com.geovane.e_commerce_api.exception.ResourceInUseException;
 import com.geovane.e_commerce_api.exception.ResourceNotFoundException;
 import com.geovane.e_commerce_api.mapper.CategoryMapper;
 import com.geovane.e_commerce_api.model.Category;
 import com.geovane.e_commerce_api.repository.CategoryRepository;
+import com.geovane.e_commerce_api.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +17,12 @@ import java.util.List;
 @Service
 public class CategoryService {
     private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
 
     @Autowired
-    public CategoryService(CategoryRepository categoryRepository) {
+    public CategoryService(CategoryRepository categoryRepository, ProductRepository productRepository) {
         this.categoryRepository = categoryRepository;
+        this.productRepository = productRepository;
     }
 
     public List<CategoryResponse> getAll() {
@@ -55,6 +59,10 @@ public class CategoryService {
 
     public void delete(Long id) {
         Category category = categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Category not found."));
+
+        if (productRepository.existsByCategoryId(id)) {
+            throw new ResourceInUseException("Category has products linked to it.");
+        }
 
         categoryRepository.delete(category);
     }
