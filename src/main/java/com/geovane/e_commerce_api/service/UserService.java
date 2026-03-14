@@ -2,6 +2,7 @@ package com.geovane.e_commerce_api.service;
 
 import com.geovane.e_commerce_api.dto.request.CreateUserRequest;
 import com.geovane.e_commerce_api.dto.response.UserResponse;
+import com.geovane.e_commerce_api.exception.ResourceAlreadyExistsException;
 import com.geovane.e_commerce_api.mapper.UserMapper;
 import com.geovane.e_commerce_api.model.User;
 import com.geovane.e_commerce_api.repository.UserRepository;
@@ -22,7 +23,7 @@ public class UserService {
 
     public UserResponse save(CreateUserRequest request) {
         if (userRepository.existsByEmailIgnoreCase(request.email())) {
-            throw new RuntimeException("Email already registered.");
+            throw new ResourceAlreadyExistsException("Email already registered.");
         }
 
         User user = UserMapper.toUser(request);
