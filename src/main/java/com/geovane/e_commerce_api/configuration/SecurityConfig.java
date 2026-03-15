@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -47,8 +48,18 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(
                         auth -> auth
+                                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                                 .requestMatchers("/api/auth/register").permitAll()
                                 .requestMatchers("/api/auth/login").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/payment/create").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/webhook/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/category/**", "/api/product/**", "/api/cart/**", "/api/order/**").hasAnyRole("USER", "ADMIN")
+                                .requestMatchers(HttpMethod.POST, "/api/cart/**", "/api/order/**").hasAnyRole("USER", "ADMIN")
+                                .requestMatchers(HttpMethod.PUT, "/api/cart/**", "/api/order/**").hasAnyRole("USER", "ADMIN")
+                                .requestMatchers(HttpMethod.DELETE, "/api/cart/**", "/api/order/**").hasAnyRole("USER", "ADMIN")
+                                .requestMatchers(HttpMethod.POST, "/api/category/**", "/api/product/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.PUT, "/api/category/**", "/api/product/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.DELETE, "/api/category/**", "/api/product/**").hasRole("ADMIN")
                                 .anyRequest().authenticated())
                 .exceptionHandling(e -> e
                         .authenticationEntryPoint(delegatedAuthenticationEntryPoint())

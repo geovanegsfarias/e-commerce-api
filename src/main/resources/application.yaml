@@ -30,3 +30,7 @@ spring:
       key: ${STRIPE_PUBLIC_KEY}
     webhook:
       secret: ${STRIPE_WEBHOOK_SECRET}
+
+springdoc:
+  swagger-ui:
+    operations-sorter: method
