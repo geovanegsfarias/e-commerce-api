@@ -6,6 +6,7 @@ import com.geovane.e_commerce_api.mapper.OrderMapper;
 import com.geovane.e_commerce_api.model.Cart;
 import com.geovane.e_commerce_api.model.Order;
 import com.geovane.e_commerce_api.model.OrderItem;
+import com.geovane.e_commerce_api.model.OrderStatus;
 import com.geovane.e_commerce_api.repository.CartItemRepository;
 import com.geovane.e_commerce_api.repository.CartRepository;
 import com.geovane.e_commerce_api.repository.OrderRepository;
@@ -71,6 +72,7 @@ public class OrderService {
 
     public void delete(Long id, String email) {
         Order order = orderRepository.findByIdAndUserEmail(id, email).orElseThrow(() -> new ResourceNotFoundException("Order not found."));
+        if (order.getStatus() != OrderStatus.PENDING) throw new IllegalOperationException("Only pending orders can be deleted.");
         orderRepository.delete(order);
     }
 

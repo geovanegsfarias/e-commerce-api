@@ -22,3 +22,11 @@ spring:
             key: classpath:app.pub
           private:
             key: classpath:app.key
+
+  stripe:
+    api:
+      key: ${STRIPE_API_KEY}
+    public:
+      key: ${STRIPE_PUBLIC_KEY}
+    webhook:
+      secret: ${STRIPE_WEBHOOK_SECRET}

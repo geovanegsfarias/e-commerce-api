@@ -9,6 +9,7 @@ public class OrderMapper {
         return new OrderResponse(
                 order.getId(),
                 order.getUser().getId(),
+                order.getStatus(),
                 order.getDate(),
                 order.getOrderItems().stream().map(orderItem -> OrderItemMapper.toOrderItemResponse(orderItem)).toList(),
                 order.getPrice()
