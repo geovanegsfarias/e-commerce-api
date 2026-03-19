@@ -16,10 +16,15 @@ class ProductRepositoryTest {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private CategoryRepository categoryRepository;
+
     @Test
     void shouldReturnTrueWhenCategoryExistsById() {
-        Product product = productRepository.save(
-                new Product("Xbox One", "Xbox One description.", BigDecimal.TEN, 1, new Category("Console")));
+        Category category = new Category("Console");
+        categoryRepository.save(category);
+        Product product = new Product("Xbox One", "Xbox One description.", BigDecimal.TEN, 1, category);
+        productRepository.save(product);
 
         boolean exists = productRepository.existsByCategoryId(product.getCategory().getId());
 

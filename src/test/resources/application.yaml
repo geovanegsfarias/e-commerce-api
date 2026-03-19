@@ -12,3 +12,20 @@ spring:
 
   flyway:
     enabled: false
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          public:
+            key: classpath:app.pub
+          private:
+            key: classpath:app.key
+
+  stripe:
+    api:
+      key: api_key
+    public:
+      key: public_key
+    webhook:
+      secret: webhook_secret

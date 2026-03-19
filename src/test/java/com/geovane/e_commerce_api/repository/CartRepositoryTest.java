@@ -16,10 +16,14 @@ public class CartRepositoryTest {
     @Autowired
     private CartRepository cartRepository;
 
+    @Autowired
+    private UserRepository userRepository;
 
     @Test
     void shouldReturnCartWhenCartExistsByUserEmail() {
-        Cart cart = cartRepository.save(new Cart(new User("Arthur", "arthur@gmail.com", "password")));
+        User user = new User("Arthur", "arthur@gmail.com", "password");
+        userRepository.save(user);
+        cartRepository.save(new Cart(user));
 
         Optional<Cart> cartOptional = cartRepository.findByUserEmail("arthur@gmail.com");
 
