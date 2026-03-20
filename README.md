@@ -2,22 +2,24 @@
 ![Java](https://img.shields.io/badge/Java-21-E67E22)
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.5.11-85EA2D)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791)
-![Flyway](https://img.shields.io/badge/Flyway-11.7-1A6E8A)
 ![Swagger](https://img.shields.io/badge/Swagger-3-27AE60)
+![Flyway](https://img.shields.io/badge/Flyway-11.7-1A6E8A)
 ![Docker](https://img.shields.io/badge/Docker-On-2980B9)
 
 ---
 
 ### Descrição
 
-API REST para gerenciamento de e-commerce desenvolvida com Spring Boot. O projeto oferece autenticação stateless atráves de tokens JWT, controle de acesso a rotas baseado em cargos e integração com Stripe Checkout para processar o pagamento de pedidos.
+API REST para e-commerce desenvolvida com Java e Spring Boot, com autenticação JWT, autorização baseada em cargos via Spring Security, suporte a pagamentos usando Stripe API e webhook para o sistema atualizar o status do pedido após a finalização do pagamento.
+
+O projeto contém testes unitários e de integração, pipeline CI/CD usando GitHub Actions e deploy no Render.
 
 ---
 
 ### Tecnologias
 
 - Java 21, Spring Boot 3.5
-- Spring Security, JWT
+- Spring Security, JWT 
 - PostgreSQL, Flyway (Migrations)
 - JUnit 5 e Mockito (Testes)
 - Springdoc OpenAPI (Swagger)
@@ -29,9 +31,10 @@ API REST para gerenciamento de e-commerce desenvolvida com Spring Boot. O projet
 
 - Criação, busca, atualização e remoção de produtos e categorias.
 - Gerenciamento de carrinho de compras e pedidos.
-- Autenticação e autorização com JWT e cargos (user e admin).
-- Integração com Stripe Checkout e webhook para confirmação de pagamento.
+- Autenticação JWT e autorização baseada em cargos.
 - Validação de dados e paginação.
+- Tratamento global de exceções.
+- Pagamentos com Stripe API e Webhook.
 - Documentação completa via Swagger.
 
 ---
@@ -138,6 +141,6 @@ docker compose up
 - **DELETE /order/{id}:** Remove um pedido do histórico de pedidos.
 
 #### **Pagamento**
-- **POST /checkout:** Retorna dados para realizar o pagamento do pedido.
+- **POST /checkout:** Retorna o link para pagamento.
 
 ---
