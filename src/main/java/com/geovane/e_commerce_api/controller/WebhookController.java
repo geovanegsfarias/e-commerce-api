@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/webhook/stripe")
+@RequestMapping("/v1/webhook/stripe")
 @Hidden
 public class WebhookController {
     private static final Logger log = LoggerFactory.getLogger(WebhookController.class);

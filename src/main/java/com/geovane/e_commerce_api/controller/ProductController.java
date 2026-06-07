@@ -17,7 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/product")
+@RequestMapping("/v1/product")
 @SecurityRequirement(name = "Bearer Authentication")
 @Tag(name = "Product")
 public class ProductController {

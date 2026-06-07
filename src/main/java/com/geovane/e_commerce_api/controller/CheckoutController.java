@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/checkout")
+@RequestMapping("/v1/checkout")
 @Tag(name = "Checkout")
 public class CheckoutController {
     private final StripeService stripeService;

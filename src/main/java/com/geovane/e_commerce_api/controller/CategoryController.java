@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/category")
+@RequestMapping("/v1/category")
 @SecurityRequirement(name = "Bearer Authentication")
 @Tag(name = "Category")
 public class CategoryController {

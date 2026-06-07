@@ -51,7 +51,7 @@ public class SecurityConfig {
                         auth -> auth
                                 .requestMatchers("/v1/auth/**").permitAll()
                                 .requestMatchers("/v1/webhook/stripe").permitAll()
-                                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
+                                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
                                 .requestMatchers(HttpMethod.GET, "/v1/category/**", "/v1/product/**").hasAnyRole("USER", "ADMIN")
 

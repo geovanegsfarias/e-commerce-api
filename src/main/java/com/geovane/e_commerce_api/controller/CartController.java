@@ -17,7 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/cart")
+@RequestMapping("/v1/cart")
 @SecurityRequirement(name = "Bearer Authentication")
 @Tag(name = "Cart")
 public class CartController {
