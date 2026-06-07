@@ -3,33 +3,29 @@ spring:
     name: e-commerce-api
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/e_commerce_db}
-    username: ${SPRING_DATASOURCE_USERNAME:postgres}
-    password: ${SPRING_DATASOURCE_PASSWORD:postgres123}
-    driver-class-name: org.postgresql.Driver
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
 
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
 
   flyway:
     enabled: true
 
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          public:
-            key: ${JWT_PUBLIC_KEY_PATH:classpath:app.pub}
-          private:
-            key: ${JWT_PRIVATE_KEY_PATH:classpath:app.key}
+app:
+  jwt:
+    public-key: ${JWT_PUBLIC_KEY_PATH}
+    private-key: ${JWT_PRIVATE_KEY_PATH}
+    issuer: ${JWT_ISSUER:e-commerce-api}
+    expiration: ${JWT_EXPIRATION:1h}
 
   stripe:
-    api:
-      key: ${STRIPE_API_KEY}
-    public:
-      key: ${STRIPE_PUBLIC_KEY}
-    webhook:
-      secret: ${STRIPE_WEBHOOK_SECRET}
+    secret-key: ${STRIPE_API_KEY}
+    webhook-secret: ${STRIPE_WEBHOOK_SECRET}
+    success-url: ${STRIPE_SUCCESS_URL}
+    cancel-url: ${STRIPE_CANCEL_URL}
 
 springdoc:
   swagger-ui:

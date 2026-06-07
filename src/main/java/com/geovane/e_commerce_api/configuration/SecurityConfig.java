@@ -3,9 +3,8 @@ package com.geovane.e_commerce_api.configuration;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -26,22 +25,19 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
-
 @Configuration
 @EnableWebSecurity
+@EnableConfigurationProperties(JwtConfigurationProperties.class)
 public class SecurityConfig {
-    @Value("${spring.security.oauth2.resourceserver.jwt.public.key}")
-    private RSAPublicKey key;
-    @Value("${spring.security.oauth2.resourceserver.jwt.private.key}")
-    private RSAPrivateKey priv;
     private final HandlerExceptionResolver resolver;
+    private final JwtConfigurationProperties jwtProperties;
 
 
-    @Autowired
-    public SecurityConfig(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
+    public SecurityConfig(
+            @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver,
+            JwtConfigurationProperties jwtProperties) {
         this.resolver = resolver;
+        this.jwtProperties = jwtProperties;
     }
 
     @Bean
@@ -74,12 +70,14 @@ public class SecurityConfig {
 
     @Bean
     public JwtDecoder jwtDecoder() {
-        return NimbusJwtDecoder.withPublicKey(key).build();
+        return NimbusJwtDecoder.withPublicKey(jwtProperties.publicKey()).build();
     }
 
     @Bean
     public JwtEncoder jwtEncoder() {
-        var jwk = new RSAKey.Builder(key).privateKey(priv).build();
+        var jwk = new RSAKey.Builder(jwtProperties.publicKey())
+                .privateKey(jwtProperties.privateKey())
+                .build();
         var jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
         return new NimbusJwtEncoder(jwks);
     }

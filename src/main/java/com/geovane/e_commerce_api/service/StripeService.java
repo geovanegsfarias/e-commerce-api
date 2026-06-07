@@ -1,5 +1,6 @@
 package com.geovane.e_commerce_api.service;
 
+import com.geovane.e_commerce_api.configuration.StripeConfigurationProperties;
 import com.geovane.e_commerce_api.dto.request.StripeRequest;
 import com.geovane.e_commerce_api.dto.response.StripeResponse;
 import com.geovane.e_commerce_api.exception.*;
@@ -14,7 +15,6 @@ import com.stripe.param.checkout.SessionCreateParams;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -24,11 +24,15 @@ public class StripeService {
     private static final Logger logger = LoggerFactory.getLogger(StripeService.class);
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final StripeConfigurationProperties stripeProperties;
 
-    @Autowired
-    public StripeService(OrderRepository orderRepository, ProductRepository productRepository) {
+    public StripeService(
+            OrderRepository orderRepository,
+            ProductRepository productRepository,
+            StripeConfigurationProperties stripeProperties) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
+        this.stripeProperties = stripeProperties;
     }
 
     public StripeResponse checkoutOrder(StripeRequest request, String email) {
@@ -66,8 +70,8 @@ public class StripeService {
         SessionCreateParams params =
                 SessionCreateParams.builder()
                         .setMode(SessionCreateParams.Mode.PAYMENT)
-                        .setSuccessUrl("http://localhost:8080")
-                        .setCancelUrl("http://localhost:8080")
+                        .setSuccessUrl(stripeProperties.successUrl())
+                        .setCancelUrl(stripeProperties.cancelUrl())
                         .setClientReferenceId(order.getId().toString())
                         .addLineItem(lineItem)
                         .build();

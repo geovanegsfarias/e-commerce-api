@@ -1,5 +1,6 @@
 package com.geovane.e_commerce_api.controller;
 
+import com.geovane.e_commerce_api.configuration.StripeConfigurationProperties;
 import com.geovane.e_commerce_api.exception.PaymentException;
 import com.geovane.e_commerce_api.service.StripeService;
 import com.stripe.exception.SignatureVerificationException;
@@ -9,8 +10,6 @@ import com.stripe.net.Webhook;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,13 +17,12 @@ import org.springframework.web.bind.annotation.*;
 @Hidden
 public class WebhookController {
     private static final Logger log = LoggerFactory.getLogger(WebhookController.class);
-    @Value("${spring.stripe.webhook.secret}")
-    private String webhookSecret;
     private final StripeService stripeService;
+    private final StripeConfigurationProperties stripeProperties;
 
-    @Autowired
-    public WebhookController(StripeService stripeService) {
+    public WebhookController(StripeService stripeService, StripeConfigurationProperties stripeProperties) {
         this.stripeService = stripeService;
+        this.stripeProperties = stripeProperties;
     }
 
     @PostMapping
@@ -32,7 +30,7 @@ public class WebhookController {
         Event event;
 
         try {
-            event = Webhook.constructEvent(payload, header, webhookSecret);
+            event = Webhook.constructEvent(payload, header, stripeProperties.webhookSecret());
             switch (event.getType()) {
 
                 case "checkout.session.completed":

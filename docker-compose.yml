@@ -2,34 +2,37 @@ services:
   api:
     container_name: e-commerce-api
     image: 'e-commerce-api'
-    restart: always
     build:
       context: .
       dockerfile: Dockerfile
     depends_on:
       - postgres
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/e_commerce_db
-      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
-      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${ENV_POSTGRES_DB}
+      - SPRING_DATASOURCE_USERNAME=${ENV_POSTGRES_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${ENV_POSTGRES_PASSWORD}
+      - JWT_PUBLIC_KEY_PATH=${JWT_PUBLIC_KEY_PATH:-classpath:app.pub}
+      - JWT_PRIVATE_KEY_PATH=${JWT_PRIVATE_KEY_PATH:-classpath:app.key}
+      - JWT_ISSUER=${JWT_ISSUER:-e-commerce-api}
+      - JWT_EXPIRATION=${JWT_EXPIRATION:-1h}
       - STRIPE_API_KEY=${STRIPE_API_KEY}
-      - STRIPE_PUBLIC_KEY=${STRIPE_PUBLIC_KEY}
       - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      - STRIPE_SUCCESS_URL=${STRIPE_SUCCESS_URL:-http://localhost:8080}
+      - STRIPE_CANCEL_URL=${STRIPE_CANCEL_URL:-http://localhost:8080}
     ports:
       - "8080:8080"
 
   postgres:
     container_name: postgresql
     image: 'postgres:16-alpine'
-    restart: always
     environment:
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${ENV_POSTGRES_DB}
+      - POSTGRES_USER=${ENV_POSTGRES_USERNAME}
+      - POSTGRES_PASSWORD=${ENV_POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
 
 volumes:
-  postgres_data:
+  db_data:
