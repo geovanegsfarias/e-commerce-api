@@ -1,13 +1,14 @@
 package com.github.geovanegsfarias.service;
 
-import com.github.geovanegsfarias.dto.request.CreateCategoryRequest;
-import com.github.geovanegsfarias.dto.response.CategoryResponse;
+import com.github.geovanegsfarias.category.CategoryService;
+import com.github.geovanegsfarias.category.CreateCategoryRequest;
+import com.github.geovanegsfarias.category.CategoryResponse;
 import com.github.geovanegsfarias.exception.ResourceAlreadyExistsException;
 import com.github.geovanegsfarias.exception.ResourceInUseException;
 import com.github.geovanegsfarias.exception.ResourceNotFoundException;
-import com.github.geovanegsfarias.model.Category;
-import com.github.geovanegsfarias.repository.CategoryRepository;
-import com.github.geovanegsfarias.repository.ProductRepository;
+import com.github.geovanegsfarias.category.Category;
+import com.github.geovanegsfarias.category.CategoryRepository;
+import com.github.geovanegsfarias.product.ProductRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

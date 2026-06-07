@@ -1,10 +1,11 @@
 package com.github.geovanegsfarias.service;
 
-import com.github.geovanegsfarias.dto.request.CreateUserRequest;
-import com.github.geovanegsfarias.dto.response.UserResponse;
+import com.github.geovanegsfarias.user.CreateUserRequest;
+import com.github.geovanegsfarias.user.UserResponse;
 import com.github.geovanegsfarias.exception.ResourceAlreadyExistsException;
-import com.github.geovanegsfarias.model.User;
-import com.github.geovanegsfarias.repository.UserRepository;
+import com.github.geovanegsfarias.user.User;
+import com.github.geovanegsfarias.user.UserRepository;
+import com.github.geovanegsfarias.user.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

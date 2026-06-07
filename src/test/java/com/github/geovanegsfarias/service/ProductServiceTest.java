@@ -1,12 +1,13 @@
 package com.github.geovanegsfarias.service;
 
-import com.github.geovanegsfarias.dto.request.CreateProductRequest;
-import com.github.geovanegsfarias.dto.response.ProductResponse;
+import com.github.geovanegsfarias.product.CreateProductRequest;
+import com.github.geovanegsfarias.product.ProductResponse;
 import com.github.geovanegsfarias.exception.ResourceNotFoundException;
-import com.github.geovanegsfarias.model.Category;
-import com.github.geovanegsfarias.model.Product;
-import com.github.geovanegsfarias.repository.CategoryRepository;
-import com.github.geovanegsfarias.repository.ProductRepository;
+import com.github.geovanegsfarias.category.Category;
+import com.github.geovanegsfarias.product.Product;
+import com.github.geovanegsfarias.product.ProductService;
+import com.github.geovanegsfarias.category.CategoryRepository;
+import com.github.geovanegsfarias.product.ProductRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

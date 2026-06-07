@@ -1,12 +1,13 @@
 package com.github.geovanegsfarias.service;
 
-import com.github.geovanegsfarias.dto.response.CartResponse;
+import com.github.geovanegsfarias.cart.CartService;
+import com.github.geovanegsfarias.cart.CartResponse;
 import com.github.geovanegsfarias.exception.ResourceNotFoundException;
-import com.github.geovanegsfarias.model.Cart;
-import com.github.geovanegsfarias.model.User;
-import com.github.geovanegsfarias.repository.CartItemRepository;
-import com.github.geovanegsfarias.repository.CartRepository;
-import com.github.geovanegsfarias.repository.UserRepository;
+import com.github.geovanegsfarias.cart.Cart;
+import com.github.geovanegsfarias.user.User;
+import com.github.geovanegsfarias.cart.CartItemRepository;
+import com.github.geovanegsfarias.cart.CartRepository;
+import com.github.geovanegsfarias.user.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

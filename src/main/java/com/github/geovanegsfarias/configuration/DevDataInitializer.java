@@ -1,8 +1,8 @@
 package com.github.geovanegsfarias.configuration;
 
-import com.github.geovanegsfarias.model.User;
-import com.github.geovanegsfarias.model.UserRole;
-import com.github.geovanegsfarias.repository.UserRepository;
+import com.github.geovanegsfarias.user.User;
+import com.github.geovanegsfarias.user.UserRepository;
+import com.github.geovanegsfarias.user.UserRole;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;

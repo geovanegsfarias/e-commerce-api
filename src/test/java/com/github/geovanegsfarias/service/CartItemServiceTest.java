@@ -1,14 +1,19 @@
 package com.github.geovanegsfarias.service;
 
-import com.github.geovanegsfarias.dto.request.CreateCartItemRequest;
-import com.github.geovanegsfarias.dto.response.CartItemResponse;
+import com.github.geovanegsfarias.cart.Cart;
+import com.github.geovanegsfarias.cart.CartItem;
+import com.github.geovanegsfarias.cart.CartItemService;
+import com.github.geovanegsfarias.category.Category;
+import com.github.geovanegsfarias.cart.CreateCartItemRequest;
+import com.github.geovanegsfarias.cart.CartItemResponse;
 import com.github.geovanegsfarias.exception.ForbiddenAccessException;
 import com.github.geovanegsfarias.exception.InsufficientStockException;
 import com.github.geovanegsfarias.exception.ResourceNotFoundException;
-import com.github.geovanegsfarias.model.*;
-import com.github.geovanegsfarias.repository.CartItemRepository;
-import com.github.geovanegsfarias.repository.CartRepository;
-import com.github.geovanegsfarias.repository.ProductRepository;
+import com.github.geovanegsfarias.product.Product;
+import com.github.geovanegsfarias.cart.CartItemRepository;
+import com.github.geovanegsfarias.cart.CartRepository;
+import com.github.geovanegsfarias.product.ProductRepository;
+import com.github.geovanegsfarias.user.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

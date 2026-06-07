@@ -1,7 +1,9 @@
 package com.github.geovanegsfarias.repository;
 
-import com.github.geovanegsfarias.model.Cart;
-import com.github.geovanegsfarias.model.User;
+import com.github.geovanegsfarias.cart.Cart;
+import com.github.geovanegsfarias.cart.CartRepository;
+import com.github.geovanegsfarias.user.User;
+import com.github.geovanegsfarias.user.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;

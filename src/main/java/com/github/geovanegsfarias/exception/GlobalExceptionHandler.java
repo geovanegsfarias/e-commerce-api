@@ -1,6 +1,5 @@
 package com.github.geovanegsfarias.exception;
 
-import com.github.geovanegsfarias.dto.response.ErrorResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;

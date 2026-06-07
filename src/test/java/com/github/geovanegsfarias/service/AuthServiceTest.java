@@ -1,6 +1,8 @@
 package com.github.geovanegsfarias.service;
 
-import com.github.geovanegsfarias.dto.response.LoginResponse;
+import com.github.geovanegsfarias.auth.AuthService;
+import com.github.geovanegsfarias.auth.JwtService;
+import com.github.geovanegsfarias.auth.LoginResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
