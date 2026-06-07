@@ -12,6 +12,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -48,26 +49,26 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(
                         auth -> auth
-                                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                                .requestMatchers("/api/auth/register").permitAll()
-                                .requestMatchers("/api/auth/login").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/payment/create").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/webhook/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/category/**", "/api/product/**", "/api/cart/**", "/api/order/**").hasAnyRole("USER", "ADMIN")
-                                .requestMatchers(HttpMethod.POST, "/api/cart/**", "/api/order/**").hasAnyRole("USER", "ADMIN")
-                                .requestMatchers(HttpMethod.PUT, "/api/cart/**", "/api/order/**").hasAnyRole("USER", "ADMIN")
-                                .requestMatchers(HttpMethod.DELETE, "/api/cart/**", "/api/order/**").hasAnyRole("USER", "ADMIN")
-                                .requestMatchers(HttpMethod.POST, "/api/category/**", "/api/product/**").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.PUT, "/api/category/**", "/api/product/**").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.DELETE, "/api/category/**", "/api/product/**").hasRole("ADMIN")
-                                .anyRequest().authenticated())
+                                .requestMatchers("/v1/auth/**").permitAll()
+                                .requestMatchers("/v1/webhook/stripe").permitAll()
+                                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
+
+                                .requestMatchers(HttpMethod.GET, "/v1/category/**", "/v1/product/**").hasAnyRole("USER", "ADMIN")
+
+                                .requestMatchers("/v1/category/**", "/v1/product/**").hasRole("ADMIN")
+
+                                .requestMatchers("/v1/cart/**", "/v1/order/**", "/v1/checkout/**").hasAnyRole("USER", "ADMIN")
+
+                                .anyRequest().denyAll())
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(e -> e
                         .authenticationEntryPoint(delegatedAuthenticationEntryPoint())
                         .accessDeniedHandler(accessDeniedHandler()))
                 .httpBasic(Customizer.withDefaults())
                 .oauth2ResourceServer(config -> config
-                                .jwt(Customizer.withDefaults())
-                                .authenticationEntryPoint(delegatedAuthenticationEntryPoint()));
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                        .authenticationEntryPoint(delegatedAuthenticationEntryPoint()));
         return http.build();
     }
 
