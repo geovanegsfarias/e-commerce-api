@@ -22,4 +22,4 @@ app:
 
 logging:
   level:
-    com.geovane: DEBUG
+    com.github.geovanegsfarias: DEBUG
