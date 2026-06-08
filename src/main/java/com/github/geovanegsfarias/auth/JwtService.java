@@ -24,15 +24,16 @@ public class JwtService {
 
     public String generateToken(Authentication authentication) {
         var instant = Instant.now();
+        var expiry = 3600L;
 
         var scopes = authentication.getAuthorities().stream()
                 .map(authority -> authority.getAuthority())
                 .collect(Collectors.joining(" "));
 
         var claims = JwtClaimsSet.builder()
-                .issuer(jwtProperties.issuer())
+                .issuer("e-commerce-api")
                 .issuedAt(instant)
-                .expiresAt(instant.plus(jwtProperties.expiration()))
+                .expiresAt(instant.plusSeconds(expiry))
                 .subject(authentication.getName())
                 .claim("scope", scopes)
                 .build();

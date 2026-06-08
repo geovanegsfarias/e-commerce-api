@@ -66,8 +66,8 @@ public class StripeService {
         SessionCreateParams params =
                 SessionCreateParams.builder()
                         .setMode(SessionCreateParams.Mode.PAYMENT)
-                        .setSuccessUrl(stripeProperties.successUrl())
-                        .setCancelUrl(stripeProperties.cancelUrl())
+                        .setSuccessUrl("http://localhost:8080")
+                        .setCancelUrl("http://localhost:8080")
                         .setClientReferenceId(order.getId().toString())
                         .addLineItem(lineItem)
                         .build();

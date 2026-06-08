@@ -9,7 +9,5 @@ import java.time.Duration;
 @ConfigurationProperties(prefix = "app.jwt")
 public record JwtConfigurationProperties(
         RSAPublicKey publicKey,
-        RSAPrivateKey privateKey,
-        String issuer,
-        Duration expiration) {
+        RSAPrivateKey privateKey) {
 }

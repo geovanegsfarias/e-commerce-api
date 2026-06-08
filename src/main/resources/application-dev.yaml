@@ -1,25 +1,12 @@
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/${DB_NAME:e_commerce_db}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:postgres}
-
   jpa:
     show-sql: true
+
+logging:
+  level:
+    com.github.geovanegsfarias: DEBUG
 
 app:
   admin:
     email: ${ADMIN_EMAIL}
     password: ${ADMIN_PASSWORD}
-
-  jwt:
-    public-key: ${JWT_PUBLIC_KEY_PATH:classpath:app.pub}
-    private-key: ${JWT_PRIVATE_KEY_PATH:classpath:app.key}
-
-  stripe:
-    success-url: ${STRIPE_SUCCESS_URL:http://localhost:8080}
-    cancel-url: ${STRIPE_CANCEL_URL:http://localhost:8080}
-
-logging:
-  level:
-    com.github.geovanegsfarias: DEBUG

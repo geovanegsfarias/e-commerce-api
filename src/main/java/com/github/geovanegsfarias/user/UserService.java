@@ -18,7 +18,7 @@ public class UserService {
     }
 
     public User findByEmailOrThrowException(String email) {
-        return userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return userRepository.findByEmailIgnoreCase(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     public User save(User userToSave) {

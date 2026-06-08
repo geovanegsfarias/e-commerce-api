@@ -1,0 +1,39 @@
+services:
+  api:
+    container_name: e-commerce-api
+    image: 'e-commerce-api'
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${ENV_POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${ENV_POSTGRES_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${ENV_POSTGRES_PASSWORD}
+      JWT_PRIVATE_KEY_PATH: file:/run/secrets/app.key
+      JWT_PUBLIC_KEY_PATH: file:/run/secrets/app.pub
+      STRIPE_API_KEY: ${STRIPE_API_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      ADMIN_EMAIL: ${ENV_ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ENV_ADMIN_PASSWORD}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./src/main/resources/app.key:/run/secrets/app.key:ro
+      - ./src/main/resources/app.pub:/run/secrets/app.pub:ro
+
+  postgres:
+    container_name: postgresql
+    image: 'postgres:16-alpine'
+    environment:
+      - POSTGRES_DB=${ENV_POSTGRES_DB}
+      - POSTGRES_USER=${ENV_POSTGRES_USERNAME}
+      - POSTGRES_PASSWORD=${ENV_POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:

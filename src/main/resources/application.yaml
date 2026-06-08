@@ -3,9 +3,9 @@ spring:
     name: e-commerce-api
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/e_commerce}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
 
   jpa:
     hibernate:
@@ -16,16 +16,12 @@ spring:
 
 app:
   jwt:
-    public-key: ${JWT_PUBLIC_KEY_PATH}
-    private-key: ${JWT_PRIVATE_KEY_PATH}
-    issuer: ${JWT_ISSUER:e-commerce-api}
-    expiration: ${JWT_EXPIRATION:1h}
+    public-key: ${JWT_PUBLIC_KEY_PATH:file:./src/main/resources/app.pub}
+    private-key: ${JWT_PRIVATE_KEY_PATH:file:./src/main/resources/app.key}
 
   stripe:
     secret-key: ${STRIPE_API_KEY}
     webhook-secret: ${STRIPE_WEBHOOK_SECRET}
-    success-url: ${STRIPE_SUCCESS_URL}
-    cancel-url: ${STRIPE_CANCEL_URL}
 
 springdoc:
   swagger-ui:
