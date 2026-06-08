@@ -1,31 +1,28 @@
 package com.github.geovanegsfarias.cart;
-
 import com.github.geovanegsfarias.product.Product;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 
-public class CartItemMapper {
+import java.util.List;
 
-    public static CartItem toCartItem(Cart cart, Product product, int quantity) {
-        return new CartItem(
-                quantity,
-                cart,
-                product
-        );
-    }
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public interface CartItemMapper {
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "cart", ignore = true)
+    @Mapping(target = "product", ignore = true)
+    CartItem toCartItem(CreateCartItemRequest request);
 
-    public static CartItem toCartItem(CreateCartItemRequest request) {
-        return new CartItem(
-                request.quantity()
-        );
-    }
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "cart", source = "cart")
+    @Mapping(target = "product", source = "product")
+    @Mapping(target = "quantity", source = "quantity")
+    CartItem toCartItem(Cart cart, Product product, int quantity);
 
-    public static CartItemResponse toCartItemResponse(CartItem cartItem) {
-        return new CartItemResponse(
-                cartItem.getId(),
-                cartItem.getProduct().getId(),
-                cartItem.getProduct().getName(),
-                cartItem.getProduct().getPrice(),
-                cartItem.getQuantity()
-        );
-    }
+    @Mapping(target = "productId", source = "product.id")
+    @Mapping(target = "productName", source = "product.name")
+    @Mapping(target = "price", source = "product.price")
+    CartItemResponse toCartItemResponse(CartItem cartItem);
 
+    List<CartItemResponse> toCartItemResponseList(List<CartItem> cartItems);
 }

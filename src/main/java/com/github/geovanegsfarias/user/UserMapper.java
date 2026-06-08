@@ -1,21 +1,18 @@
 package com.github.geovanegsfarias.user;
 
-public class UserMapper {
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 
-    public static User toUser(CreateUserRequest request) {
-        return new User(
-                request.username(),
-                request.email(),
-                request.password()
-        );
-    }
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public interface UserMapper {
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "name", source = "username")
+    @Mapping(target = "role", constant = "ROLE_USER")
+    @Mapping(target = "cart", ignore = true)
+    @Mapping(target = "orders", ignore = true)
+    User toUser(CreateUserRequest request);
 
-    public static UserResponse toUserResponse(User user) {
-        return new UserResponse(
-                user.getId(),
-                user.getName(),
-                user.getEmail()
-        );
-    }
-
+    @Mapping(target = "username", source = "name")
+    UserResponse toUserResponse(User user);
 }

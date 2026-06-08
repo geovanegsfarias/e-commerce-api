@@ -19,10 +19,12 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Order")
 public class OrderController {
     private final OrderService orderService;
+    private final OrderMapper mapper;
 
     @Autowired
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderService orderService, OrderMapper mapper) {
         this.orderService = orderService;
+        this.mapper = mapper;
     }
 
     @GetMapping
@@ -33,7 +35,7 @@ public class OrderController {
     public ResponseEntity<Page<OrderResponse>> getAllOrders(Authentication authentication, @ParameterObject Pageable pageable) {
         var orders = orderService.findAll(authentication.getName(), pageable);
 
-        var orderResponsePage = orders.map(order -> OrderMapper.toOrderResponse(order));
+        var orderResponsePage = orders.map(order -> mapper.toOrderResponse(order));
 
         return ResponseEntity.ok(orderResponsePage);
     }
@@ -47,7 +49,7 @@ public class OrderController {
     public ResponseEntity<OrderResponse> getOrder(@PathVariable Long id, Authentication authentication) {
         var order = orderService.findByIdAndEmailOrThrowException(id, authentication.getName());
 
-        var orderResponse = OrderMapper.toOrderResponse(order);
+        var orderResponse = mapper.toOrderResponse(order);
 
         return ResponseEntity.ok(orderResponse);
     }
@@ -63,7 +65,7 @@ public class OrderController {
     public ResponseEntity<OrderResponse> saveOrder(Authentication authentication) {
         var savedOrder = orderService.save(authentication.getName());
 
-        var orderResponse = OrderMapper.toOrderResponse(savedOrder);
+        var orderResponse = mapper.toOrderResponse(savedOrder);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(orderResponse);
     }

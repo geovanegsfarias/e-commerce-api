@@ -10,11 +10,13 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder encoder;
+    private final UserMapper mapper;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder encoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder encoder, UserMapper mapper) {
         this.userRepository = userRepository;
         this.encoder = encoder;
+        this.mapper = mapper;
     }
 
     public User findByEmailOrThrowException(String email) {
@@ -26,10 +28,10 @@ public class UserService {
             throw new ResourceAlreadyExistsException("Email already registered.");
         }
 
-        var user = UserMapper.toUser(request);
+        var user = mapper.toUser(request);
 
         user.setPassword(encoder.encode(user.getPassword()));
-        return UserMapper.toUserResponse(userRepository.save(user));
+        return mapper.toUserResponse(userRepository.save(user));
     }
 
 }

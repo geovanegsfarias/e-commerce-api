@@ -1,18 +1,18 @@
 package com.github.geovanegsfarias.category;
 
-public class CategoryMapper {
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 
-    public static Category toCategory(CreateCategoryRequest request) {
-        return new Category(
-                request.name()
-        );
-    }
+import java.util.List;
 
-    public static CategoryResponse toCategoryResponse(Category category) {
-        return new CategoryResponse(
-                category.getId(),
-                category.getName()
-        );
-    }
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public interface CategoryMapper {
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "products", ignore = true)
+    Category toCategory(CreateCategoryRequest request);
 
+    CategoryResponse toCategoryResponse(Category category);
+
+    List<CategoryResponse> toCategoryResponseList(List<Category> categories);
 }

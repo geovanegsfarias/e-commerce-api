@@ -18,11 +18,15 @@ import org.springframework.web.bind.annotation.*;
 public class CartController {
     private final CartService cartService;
     private final CartItemService cartItemService;
+    private final CartMapper cartMapper;
+    private final CartItemMapper cartItemMapper;
 
     @Autowired
-    public CartController(CartService cartService, CartItemService cartItemService) {
+    public CartController(CartService cartService, CartItemService cartItemService, CartMapper cartMapper, CartItemMapper cartItemMapper) {
         this.cartService = cartService;
         this.cartItemService = cartItemService;
+        this.cartMapper = cartMapper;
+        this.cartItemMapper = cartItemMapper;
     }
 
     @GetMapping
@@ -34,7 +38,7 @@ public class CartController {
     public ResponseEntity<CartResponse> getCart(Authentication authentication) {
         var cart = cartService.findByEmailOrThrowException(authentication.getName());
 
-        var cartResponse = CartMapper.toCartResponse(cart);
+        var cartResponse = cartMapper.toCartResponse(cart);
 
         return ResponseEntity.ok(cartResponse);
     }
@@ -48,7 +52,7 @@ public class CartController {
     public ResponseEntity<CartResponse> saveCart(Authentication authentication) {
         var savedCart = cartService.save(authentication.getName());
 
-        var cartResponse = CartMapper.toCartResponse(savedCart);
+        var cartResponse = cartMapper.toCartResponse(savedCart);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(cartResponse);
     }
@@ -75,11 +79,11 @@ public class CartController {
     @ApiResponse(responseCode = "404", description = "Product not found.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<CartItemResponse> saveCartItem(@RequestBody @Valid CreateCartItemRequest request, Authentication authentication) {
-        var cartItemToSave = CartItemMapper.toCartItem(request);
+        var cartItemToSave = cartItemMapper.toCartItem(request);
 
         var savedCartItem = cartItemService.save(cartItemToSave, request.productId(), authentication.getName());
 
-        var cartItemResponse = CartItemMapper.toCartItemResponse(savedCartItem);
+        var cartItemResponse = cartItemMapper.toCartItemResponse(savedCartItem);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(cartItemResponse);
     }

@@ -14,12 +14,14 @@ public class CartItemService {
     private final CartItemRepository cartItemRepository;
     private final CartService cartService;
     private final ProductService productService;
+    private final CartItemMapper mapper;
 
     @Autowired
-    public CartItemService(CartItemRepository cartItemRepository, CartService cartService, ProductService productService) {
+    public CartItemService(CartItemRepository cartItemRepository, CartService cartService, ProductService productService, CartItemMapper mapper) {
         this.cartItemRepository = cartItemRepository;
         this.cartService = cartService;
         this.productService = productService;
+        this.mapper = mapper;
     }
 
     public CartItem findByIdOrThrowException(Long id) {
@@ -57,7 +59,7 @@ public class CartItemService {
     private CartItem createCartItem(Cart cart, Product product, int quantity) {
         assertStockIsAvailable(product, quantity);
 
-        var cartItem = CartItemMapper.toCartItem(cart, product, quantity);
+        var cartItem = mapper.toCartItem(cart, product, quantity);
 
         return cartItemRepository.save(cartItem);
     }

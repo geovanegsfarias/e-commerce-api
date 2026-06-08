@@ -17,11 +17,13 @@ import java.util.List;
 @SecurityRequirement(name = "Bearer Authentication")
 @Tag(name = "Category")
 public class CategoryController {
+    private final CategoryMapper mapper;
     private final CategoryService categoryService;
 
     @Autowired
-    public CategoryController(CategoryService categoryService) {
+    public CategoryController(CategoryService categoryService, CategoryMapper mapper) {
         this.categoryService = categoryService;
+        this.mapper = mapper;
     }
 
     @GetMapping
@@ -31,7 +33,7 @@ public class CategoryController {
     public ResponseEntity<List<CategoryResponse>> getAllCategories() {
         var categories = categoryService.findAll();
 
-        var categoryResponseList = categories.stream().map(category -> CategoryMapper.toCategoryResponse(category)).toList();
+        var categoryResponseList = mapper.toCategoryResponseList(categories);
 
         return ResponseEntity.ok(categoryResponseList);
     }
@@ -45,7 +47,7 @@ public class CategoryController {
     public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable Long id) {
         var category = categoryService.findByIdOrThrowException(id);
 
-        var categoryResponse = CategoryMapper.toCategoryResponse(category);
+        var categoryResponse = mapper.toCategoryResponse(category);
 
         return ResponseEntity.ok(categoryResponse);
 
@@ -60,11 +62,11 @@ public class CategoryController {
     @ApiResponse(responseCode = "409", description = "Category name already in use.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<CategoryResponse> saveCategory(@RequestBody @Valid CreateCategoryRequest request) {
-        var categoryToSave = CategoryMapper.toCategory(request);
+        var categoryToSave = mapper.toCategory(request);
 
         var savedCategory = categoryService.save(categoryToSave);
 
-        var categoryResponse = CategoryMapper.toCategoryResponse(savedCategory);
+        var categoryResponse = mapper.toCategoryResponse(savedCategory);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(categoryResponse);
     }
@@ -79,7 +81,7 @@ public class CategoryController {
     @ApiResponse(responseCode = "409", description = "Category name already in use.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<Void> updateCategory(@PathVariable Long id, @RequestBody @Valid CreateCategoryRequest request) {
-        var categoryToUpdate = CategoryMapper.toCategory(request);
+        var categoryToUpdate = mapper.toCategory(request);
 
         categoryToUpdate.setId(id);
 

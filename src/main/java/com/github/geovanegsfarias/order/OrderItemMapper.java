@@ -1,14 +1,16 @@
 package com.github.geovanegsfarias.order;
 
-public class OrderItemMapper {
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 
-    public static OrderItemResponse toOrderItemResponse(OrderItem orderItem) {
-        return new OrderItemResponse(
-                orderItem.getProduct().getId(),
-                orderItem.getProduct().getName(),
-                orderItem.getPrice(),
-                orderItem.getQuantity()
-        );
-    }
+import java.util.List;
 
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public interface OrderItemMapper {
+    @Mapping(target = "productId", source = "product.id")
+    @Mapping(target = "productName", source = "product.name")
+    OrderItemResponse toOrderItemResponse(OrderItem orderItem);
+
+    List<OrderItemResponse> toOrderItemResponseList(List<OrderItem> orders);
 }

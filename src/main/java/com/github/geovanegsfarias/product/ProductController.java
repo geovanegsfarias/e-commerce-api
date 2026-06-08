@@ -20,10 +20,12 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Product")
 public class ProductController {
     private final ProductService productService;
+    private final ProductMapper mapper;
 
     @Autowired
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService, ProductMapper mapper) {
         this.productService = productService;
+        this.mapper = mapper;
     }
 
     @GetMapping
@@ -34,7 +36,7 @@ public class ProductController {
     public ResponseEntity<Page<ProductResponse>> getAllProducts(@ParameterObject Pageable pageable) {
         var products = productService.findAll(pageable);
 
-        var productResponseList = products.map(product -> ProductMapper.toProductResponse(product));
+        var productResponseList = products.map(product -> mapper.toProductResponse(product));
 
         return ResponseEntity.ok(productResponseList);
     }
@@ -48,7 +50,7 @@ public class ProductController {
     public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
         var product = productService.findByIdOrThrowException(id);
 
-        var productResponse = ProductMapper.toProductResponse(product);
+        var productResponse = mapper.toProductResponse(product);
 
         return ResponseEntity.ok(productResponse);
     }
@@ -62,11 +64,11 @@ public class ProductController {
     @ApiResponse(responseCode = "404", description = "Category not found.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<ProductResponse> saveProduct(@RequestBody @Valid CreateProductRequest request) {
-        var productToSave = ProductMapper.toProduct(request);
+        var productToSave = mapper.toProduct(request);
 
         var savedProduct = productService.save(productToSave, request.categoryId());
 
-        var productResponse = ProductMapper.toProductResponse(savedProduct);
+        var productResponse = mapper.toProductResponse(savedProduct);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(productResponse);
     }
@@ -81,7 +83,7 @@ public class ProductController {
     @ApiResponse(responseCode = "404", description = "Category not found.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<Void> updateProduct(@RequestBody @Valid CreateProductRequest request, @PathVariable Long id) {
-        var productToUpdate = ProductMapper.toProduct(request);
+        var productToUpdate = mapper.toProduct(request);
 
         productToUpdate.setId(id);
 
