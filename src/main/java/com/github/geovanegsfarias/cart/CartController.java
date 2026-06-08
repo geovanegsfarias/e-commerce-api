@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/v1/cart")
 @SecurityRequirement(name = "Bearer Authentication")
 @Tag(name = "Cart")
+@Slf4j
 public class CartController {
     private final CartService cartService;
     private final CartItemService cartItemService;
@@ -36,6 +38,8 @@ public class CartController {
     @ApiResponse(responseCode = "404", description = "Cart not found.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<CartResponse> getCart(Authentication authentication) {
+        log.debug("Request received to find authenticated user's cart");
+
         var cart = cartService.findByEmailOrThrowException(authentication.getName());
 
         var cartResponse = cartMapper.toCartResponse(cart);
@@ -50,6 +54,8 @@ public class CartController {
     @ApiResponse(responseCode = "404", description = "User not found.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<CartResponse> saveCart(Authentication authentication) {
+        log.debug("Request received to save authenticated user's cart");
+
         var savedCart = cartService.save(authentication.getName());
 
         var cartResponse = cartMapper.toCartResponse(savedCart);
@@ -64,6 +70,8 @@ public class CartController {
     @ApiResponse(responseCode = "404", description = "Cart not found.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<Void> deleteCart(Authentication authentication) {
+        log.debug("Request received to clear authenticated user's cart");
+
         cartService.delete(authentication.getName());
 
         return ResponseEntity.noContent().build();
@@ -79,6 +87,8 @@ public class CartController {
     @ApiResponse(responseCode = "404", description = "Product not found.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<CartItemResponse> saveCartItem(@RequestBody @Valid CreateCartItemRequest request, Authentication authentication) {
+        log.debug("Request received to add product {} to cart with quantity {}", request.productId(), request.quantity());
+
         var cartItemToSave = cartItemMapper.toCartItem(request);
 
         var savedCartItem = cartItemService.save(cartItemToSave, request.productId(), authentication.getName());
@@ -96,6 +106,8 @@ public class CartController {
     @ApiResponse(responseCode = "404", description = "Cart item not found.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<Void> deleteCartItem(@PathVariable Long id, Authentication authentication) {
+        log.debug("Request received to delete cart item by id {}", id);
+
         cartItemService.delete(id, authentication.getName());
 
         return ResponseEntity.noContent().build();

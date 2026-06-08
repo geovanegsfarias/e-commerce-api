@@ -7,15 +7,14 @@ import com.stripe.model.Event;
 import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
 import io.swagger.v3.oas.annotations.Hidden;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v1/webhook/stripe")
+@Slf4j
 @Hidden
 public class WebhookController {
-    private static final Logger log = LoggerFactory.getLogger(WebhookController.class);
     private final StripeService stripeService;
     private final StripeConfigurationProperties stripeProperties;
 
@@ -47,10 +46,10 @@ public class WebhookController {
             }
         } catch (SignatureVerificationException e) {
             log.error("Stripe signature error: {}", e.getMessage());
-            throw new PaymentException("Signature error.");
+            throw new PaymentException("Signature error");
         } catch (Exception e) {
             log.error("Webhook error: {}", e.getMessage());
-            throw new PaymentException("Webhook error.");
+            throw new PaymentException("Webhook error");
         }
 
         return "ok";

@@ -2,15 +2,17 @@ package com.github.geovanegsfarias.cart;
 
 import com.github.geovanegsfarias.product.Product;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "cart_item")
+@Getter
+@Setter
 public class CartItem {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private int quantity;
 
     @ManyToOne
@@ -22,48 +24,12 @@ public class CartItem {
     private Product product;
 
     public CartItem() {
-
     }
 
-    public CartItem(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public CartItem(int quantity, Cart cart, Product product) {
-        this.quantity = quantity;
+    public CartItem(Cart cart, Product product, int quantity) {
         this.cart = cart;
         this.product = product;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 
-    public Cart getCart() {
-        return cart;
-    }
-
-    public void setCart(Cart cart) {
-        this.cart = cart;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
 }

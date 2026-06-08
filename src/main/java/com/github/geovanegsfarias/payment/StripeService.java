@@ -13,15 +13,14 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import jakarta.transaction.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
 @Service
+@Slf4j
 public class StripeService {
-    private static final Logger logger = LoggerFactory.getLogger(StripeService.class);
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final StripeConfigurationProperties stripeProperties;
@@ -100,7 +99,7 @@ public class StripeService {
             });
             order.setStripePaymentIntentId(session.getPaymentIntent());
             orderRepository.save(order);
-            logger.info("Order #{} payment completed.", order.getId());
+            log.info("Payment completed for order with id {}", order.getId());
         });
     }
 
@@ -112,7 +111,7 @@ public class StripeService {
         orderRepository.findById(Long.parseLong(orderId)).ifPresent(order -> {
             order.setStatus(OrderStatus.FAILED);
             orderRepository.save(order);
-            logger.info("Order #{} payment failed.", order.getId());
+            log.warn("Payment failed for order with id {}", order.getId());
         });
     }
 

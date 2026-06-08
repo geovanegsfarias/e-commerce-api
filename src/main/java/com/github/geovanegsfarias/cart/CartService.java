@@ -11,14 +11,12 @@ public class CartService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final UserService userService;
-    private final CartMapper mapper;
 
     @Autowired
-    public CartService(CartRepository cartRepository, CartItemRepository cartItemRepository, UserService userService, CartMapper mapper) {
+    public CartService(CartRepository cartRepository, CartItemRepository cartItemRepository, UserService userService) {
         this.cartRepository = cartRepository;
         this.cartItemRepository = cartItemRepository;
         this.userService = userService;
-        this.mapper = mapper;
     }
 
     public Cart findByEmailOrThrowException(String email) {
@@ -37,7 +35,7 @@ public class CartService {
 
     private Cart createCart(String userEmail) {
         var user = userService.findByEmailOrThrowException(userEmail);
-        var cart = mapper.toCart(user);
+        var cart = new Cart(user);
         return cartRepository.save(cart);
     }
 

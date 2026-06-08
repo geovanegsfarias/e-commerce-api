@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/v1/checkout")
 @Tag(name = "Checkout")
+@Slf4j
 public class CheckoutController {
     private final StripeService stripeService;
 
@@ -34,7 +36,10 @@ public class CheckoutController {
     @ApiResponse(responseCode = "404", description = "Order not found.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<CheckoutResponse> checkoutOrder(@RequestBody @Valid CheckoutRequest request, Authentication authentication) {
+        log.debug("Request received to create checkout for order by id {}", request.orderId());
+
         var checkoutResponse = stripeService.checkoutOrder(request, authentication.getName());
+
         return ResponseEntity.ok().body(checkoutResponse);
     }
 }

@@ -1,6 +1,7 @@
 package com.github.geovanegsfarias.auth;
 
 import com.github.geovanegsfarias.configuration.JwtConfigurationProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
@@ -15,6 +16,7 @@ public class JwtService {
     private final JwtEncoder encoder;
     private final JwtConfigurationProperties jwtProperties;
 
+    @Autowired
     public JwtService(JwtEncoder encoder, JwtConfigurationProperties jwtProperties) {
         this.encoder = encoder;
         this.jwtProperties = jwtProperties;

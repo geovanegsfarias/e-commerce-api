@@ -14,11 +14,12 @@ public class AuthService {
         this.jwtService = jwtService;
     }
 
-    public LoginResponse authenticate(Authentication authentication) {
+    public String authenticate(Authentication authentication) {
         if (authentication == null) {
             throw new BadCredentialsException("Invalid username or password.");
         }
-        return new LoginResponse(jwtService.generateToken(authentication));
+
+        return jwtService.generateToken(authentication);
     }
 
 }

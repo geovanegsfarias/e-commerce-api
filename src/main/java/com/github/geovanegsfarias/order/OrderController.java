@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/v1/order")
 @SecurityRequirement(name = "Bearer Authentication")
 @Tag(name = "Order")
+@Slf4j
 public class OrderController {
     private final OrderService orderService;
     private final OrderMapper mapper;
@@ -33,6 +35,8 @@ public class OrderController {
     @ApiResponse(responseCode = "401", description = "An error occurred while attempting to decode the Jwt: Malformed token.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<Page<OrderResponse>> getAllOrders(Authentication authentication, @ParameterObject Pageable pageable) {
+        log.debug("Request received to list authenticated user's orders (page: {}, size: {})", pageable.getPageNumber(), pageable.getPageSize());
+
         var orders = orderService.findAll(authentication.getName(), pageable);
 
         var orderResponsePage = orders.map(order -> mapper.toOrderResponse(order));
@@ -47,6 +51,8 @@ public class OrderController {
     @ApiResponse(responseCode = "404", description = "Order not found.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<OrderResponse> getOrder(@PathVariable Long id, Authentication authentication) {
+        log.debug("Request received to find order by id {}", id);
+
         var order = orderService.findByIdAndEmailOrThrowException(id, authentication.getName());
 
         var orderResponse = mapper.toOrderResponse(order);
@@ -63,6 +69,8 @@ public class OrderController {
     @ApiResponse(responseCode = "404", description = "User not found.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<OrderResponse> saveOrder(Authentication authentication) {
+        log.debug("Request received to create order for authenticated user");
+
         var savedOrder = orderService.save(authentication.getName());
 
         var orderResponse = mapper.toOrderResponse(savedOrder);
@@ -78,6 +86,8 @@ public class OrderController {
     @ApiResponse(responseCode = "404", description = "Order not found.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<Void> deleteOrder(@PathVariable Long id, Authentication authentication) {
+        log.debug("Request received to delete order by id {}", id);
+
         orderService.delete(id, authentication.getName());
 
         return ResponseEntity.noContent().build();

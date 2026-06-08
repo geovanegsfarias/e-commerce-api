@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/v1/product")
 @SecurityRequirement(name = "Bearer Authentication")
 @Tag(name = "Product")
+@Slf4j
 public class ProductController {
     private final ProductService productService;
     private final ProductMapper mapper;
@@ -34,6 +36,8 @@ public class ProductController {
     @ApiResponse(responseCode = "401", description = "An error occurred while attempting to decode the Jwt: Malformed token.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<Page<ProductResponse>> getAllProducts(@ParameterObject Pageable pageable) {
+        log.debug("Request received to list all products");
+
         var products = productService.findAll(pageable);
 
         var productResponseList = products.map(product -> mapper.toProductResponse(product));
@@ -48,6 +52,8 @@ public class ProductController {
     @ApiResponse(responseCode = "404", description = "Product not found.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
+        log.debug("Request received to find product by id {}", id);
+
         var product = productService.findByIdOrThrowException(id);
 
         var productResponse = mapper.toProductResponse(product);
@@ -64,6 +70,8 @@ public class ProductController {
     @ApiResponse(responseCode = "404", description = "Category not found.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<ProductResponse> saveProduct(@RequestBody @Valid CreateProductRequest request) {
+        log.debug("Request received to save product {}", request);
+
         var productToSave = mapper.toProduct(request);
 
         var savedProduct = productService.save(productToSave, request.categoryId());
@@ -83,6 +91,8 @@ public class ProductController {
     @ApiResponse(responseCode = "404", description = "Category not found.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<Void> updateProduct(@RequestBody @Valid CreateProductRequest request, @PathVariable Long id) {
+        log.debug("Request received to update product {}", request);
+
         var productToUpdate = mapper.toProduct(request);
 
         productToUpdate.setId(id);
@@ -100,6 +110,8 @@ public class ProductController {
     @ApiResponse(responseCode = "404", description = "Product not found.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+        log.debug("Request received to delete product by id {}", id);
+
         productService.delete(id);
 
         return ResponseEntity.noContent().build();

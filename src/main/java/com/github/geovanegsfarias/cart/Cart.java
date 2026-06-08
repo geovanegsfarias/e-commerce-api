@@ -2,14 +2,17 @@ package com.github.geovanegsfarias.cart;
 
 import com.github.geovanegsfarias.user.User;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "cart")
+@Getter
+@Setter
 public class Cart {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,34 +25,10 @@ public class Cart {
     private List<CartItem> cartItems = new ArrayList<>();
 
     public Cart() {
-
     }
 
     public Cart(User user) {
         this.user = user;
     }
 
-    public List<CartItem> getCartItems() {
-        return cartItems;
-    }
-
-    public void setCartItems(List<CartItem> cartItems) {
-        this.cartItems = cartItems;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 }
