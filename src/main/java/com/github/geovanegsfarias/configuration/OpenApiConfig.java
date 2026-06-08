@@ -31,7 +31,6 @@ public class OpenApiConfig {
                 .addTagsItem(new Tag().name("Order"))
                 .addTagsItem(new Tag().name("Checkout"))
                 .addSecurityItem(new SecurityRequirement()
-                        .addList("Basic Auth")
                         .addList("Bearer Authentication"))
                 .components(new Components()
                         .addSecuritySchemes("Basic Auth", new SecurityScheme()

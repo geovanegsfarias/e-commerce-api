@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -32,37 +33,52 @@ public class SecurityConfig {
     private final HandlerExceptionResolver resolver;
     private final JwtConfigurationProperties jwtProperties;
 
-
     public SecurityConfig(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver, JwtConfigurationProperties jwtProperties) {
         this.resolver = resolver;
         this.jwtProperties = jwtProperties;
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(
-                        auth -> auth
-                                .requestMatchers("/v1/auth/**").permitAll()
-                                .requestMatchers("/v1/webhook/stripe").permitAll()
-                                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-
-                                .requestMatchers(HttpMethod.GET, "/v1/category/**", "/v1/product/**").hasAnyRole("USER", "ADMIN")
-
-                                .requestMatchers("/v1/category/**", "/v1/product/**").hasRole("ADMIN")
-
-                                .requestMatchers("/v1/cart/**", "/v1/order/**", "/v1/checkout/**").hasAnyRole("USER", "ADMIN")
-
-                                .anyRequest().denyAll())
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+    @Order(1)
+    public SecurityFilterChain basicAuthFilterChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/v1/auth/login")
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(e -> e
                         .authenticationEntryPoint(delegatedAuthenticationEntryPoint())
                         .accessDeniedHandler(accessDeniedHandler()))
-                .httpBasic(Customizer.withDefaults())
-                .oauth2ResourceServer(config -> config
-                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                .httpBasic(basic -> basic
                         .authenticationEntryPoint(delegatedAuthenticationEntryPoint()));
+
+        return http.build();
+    }
+
+    @Bean
+    @Order(2)
+    public SecurityFilterChain jwtAuthFilterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/v1/auth/register").permitAll()
+                        .requestMatchers("/v1/webhook/stripe").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/v1/category/**", "/v1/product/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/v1/category/**", "/v1/product/**").hasRole("ADMIN")
+                        .requestMatchers("/v1/cart/**", "/v1/order/**", "/v1/checkout/**").hasAnyRole("USER", "ADMIN")
+                        .anyRequest().denyAll())
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(delegatedAuthenticationEntryPoint())
+                        .accessDeniedHandler(accessDeniedHandler()))
+                .oauth2ResourceServer(resourceServer -> resourceServer
+                        .jwt(jwt -> jwt
+                                .jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                        .authenticationEntryPoint(delegatedAuthenticationEntryPoint()));
+
         return http.build();
     }
 

@@ -11,6 +11,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${ENV_POSTGRES_DB}
       SPRING_DATASOURCE_USERNAME: ${ENV_POSTGRES_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${ENV_POSTGRES_PASSWORD}
+      SPRING_PROFILES_ACTIVE: dev
       JWT_PRIVATE_KEY_PATH: file:/run/secrets/app.key
       JWT_PUBLIC_KEY_PATH: file:/run/secrets/app.pub
       STRIPE_API_KEY: ${STRIPE_API_KEY}
