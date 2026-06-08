@@ -1,6 +1,8 @@
 package com.github.geovanegsfarias.cart;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -8,6 +10,8 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -32,11 +36,12 @@ public class CartController {
     }
 
     @GetMapping
-    @Operation(summary = "Get user cart", description = "Returns the authenticated user's shopping cart.")
-    @ApiResponse(responseCode = "200", description = "Cart retrieved successfully.")
-    @ApiResponse(responseCode = "401", description = "An error occurred while attempting to decode the Jwt: Malformed token.")
-    @ApiResponse(responseCode = "404", description = "Cart not found.")
-    @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
+    @Operation(summary = "Get cart")
+    @ApiResponse(responseCode = "200", description = "Cart returned")
+    @ApiResponse(responseCode = "401", description = "Authentication required", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "403", description = "Insufficient permissions", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "404", description = "Cart not found", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
     public ResponseEntity<CartResponse> getCart(Authentication authentication) {
         log.debug("Request received to find authenticated user's cart");
 
@@ -48,11 +53,12 @@ public class CartController {
     }
 
     @PostMapping
-    @Operation(summary = "Add a new cart", description = "Creates a shopping cart for the authenticated user.")
-    @ApiResponse(responseCode = "201", description = "Cart successfully created.")
-    @ApiResponse(responseCode = "401", description = "An error occurred while attempting to decode the Jwt: Malformed token.")
-    @ApiResponse(responseCode = "404", description = "User not found.")
-    @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
+    @Operation(summary = "Create cart")
+    @ApiResponse(responseCode = "201", description = "Cart created")
+    @ApiResponse(responseCode = "401", description = "Authentication required", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "403", description = "Insufficient permissions", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
     public ResponseEntity<CartResponse> saveCart(Authentication authentication) {
         log.debug("Request received to save authenticated user's cart");
 
@@ -64,11 +70,12 @@ public class CartController {
     }
 
     @DeleteMapping
-    @Operation(summary = "Delete a cart", description = "Clears all items from the authenticated user's shopping cart.")
-    @ApiResponse(responseCode = "204", description = "Cart successfully deleted.")
-    @ApiResponse(responseCode = "401", description = "An error occurred while attempting to decode the Jwt: Malformed token.")
-    @ApiResponse(responseCode = "404", description = "Cart not found.")
-    @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
+    @Operation(summary = "Clear cart")
+    @ApiResponse(responseCode = "204", description = "Cart cleared")
+    @ApiResponse(responseCode = "401", description = "Authentication required", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "403", description = "Insufficient permissions", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "404", description = "Cart not found", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
     public ResponseEntity<Void> deleteCart(Authentication authentication) {
         log.debug("Request received to clear authenticated user's cart");
 
@@ -78,14 +85,13 @@ public class CartController {
     }
 
     @PostMapping("/items")
-    @Operation(summary = "Add item to cart", description = "Adds a product to the authenticated user's shopping cart.")
-    @ApiResponse(responseCode = "201", description = "Cart item successfully created.")
-    @ApiResponse(responseCode = "400", description = "Insufficient Stock.")
-    @ApiResponse(responseCode = "400", description = "Invalid request data.")
-    @ApiResponse(responseCode = "401", description = "An error occurred while attempting to decode the Jwt: Malformed token.")
-    @ApiResponse(responseCode = "404", description = "Cart not found.")
-    @ApiResponse(responseCode = "404", description = "Product not found.")
-    @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
+    @Operation(summary = "Add item to cart")
+    @ApiResponse(responseCode = "201", description = "Item added")
+    @ApiResponse(responseCode = "400", description = "Invalid data or insufficient stock", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "401", description = "Authentication required", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "403", description = "Insufficient permissions", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "404", description = "Cart or product not found", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
     public ResponseEntity<CartItemResponse> saveCartItem(@RequestBody @Valid CreateCartItemRequest request, Authentication authentication) {
         log.debug("Request received to add product {} to cart with quantity {}", request.productId(), request.quantity());
 
@@ -99,12 +105,12 @@ public class CartController {
     }
 
     @DeleteMapping("/items/{id}")
-    @Operation(summary = "Remove item from cart", description = "Removes a specific item from the authenticated user's cart by ID.")
-    @ApiResponse(responseCode = "204", description = "Cart item successfully deleted.")
-    @ApiResponse(responseCode = "401", description = "An error occurred while attempting to decode the Jwt: Malformed token.")
-    @ApiResponse(responseCode = "403", description = "Access denied.")
-    @ApiResponse(responseCode = "404", description = "Cart item not found.")
-    @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
+    @Operation(summary = "Remove item from cart")
+    @ApiResponse(responseCode = "204", description = "Item removed")
+    @ApiResponse(responseCode = "401", description = "Authentication required", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "403", description = "Insufficient permissions", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "404", description = "Cart item not found", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
     public ResponseEntity<Void> deleteCartItem(@PathVariable Long id, Authentication authentication) {
         log.debug("Request received to delete cart item by id {}", id);
 

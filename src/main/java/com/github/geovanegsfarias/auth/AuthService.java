@@ -16,7 +16,7 @@ public class AuthService {
 
     public String authenticate(Authentication authentication) {
         if (authentication == null) {
-            throw new BadCredentialsException("Invalid username or password.");
+            throw new BadCredentialsException("Invalid username or password");
         }
 
         return jwtService.generateToken(authentication);

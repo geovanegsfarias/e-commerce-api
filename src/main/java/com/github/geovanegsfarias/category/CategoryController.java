@@ -1,6 +1,8 @@
 package com.github.geovanegsfarias.category;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -8,6 +10,8 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,9 +33,11 @@ public class CategoryController {
     }
 
     @GetMapping
-    @Operation(summary = "Get all categories", description = "Retrieve a list of all categories.")
-    @ApiResponse(responseCode = "200", description = "Successfully retrieved the list of categories.")
-    @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
+    @Operation(summary = "List categories")
+    @ApiResponse(responseCode = "200", description = "Categories returned")
+    @ApiResponse(responseCode = "401", description = "Authentication required", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "403", description = "Insufficient permissions", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
     public ResponseEntity<List<CategoryResponse>> getAllCategories() {
         log.debug("Request received to list all categories");
 
@@ -43,11 +49,12 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get a single category", description = "Retrieve a specific category by ID.")
-    @ApiResponse(responseCode = "200", description = "Category retrieved successfully.")
-    @ApiResponse(responseCode = "401", description = "An error occurred while attempting to decode the Jwt: Malformed token.")
-    @ApiResponse(responseCode = "404", description = "Category not found.")
-    @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
+    @Operation(summary = "Get category")
+    @ApiResponse(responseCode = "200", description = "Category returned")
+    @ApiResponse(responseCode = "401", description = "Authentication required", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "403", description = "Insufficient permissions", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "404", description = "Category not found", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
     public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable Long id) {
         log.debug("Request received to find category by id {}", id);
 
@@ -60,13 +67,13 @@ public class CategoryController {
     }
 
     @PostMapping
-    @Operation(summary = "Add a new category", description = "Create a new category.")
-    @ApiResponse(responseCode = "201", description = "Category successfully created.")
-    @ApiResponse(responseCode = "400", description = "Invalid request data.")
-    @ApiResponse(responseCode = "401", description = "An error occurred while attempting to decode the Jwt: Malformed token.")
-    @ApiResponse(responseCode = "403", description = "Access Denied.")
-    @ApiResponse(responseCode = "409", description = "Category name already in use.")
-    @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
+    @Operation(summary = "Create category")
+    @ApiResponse(responseCode = "201", description = "Category created")
+    @ApiResponse(responseCode = "400", description = "Invalid data", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "401", description = "Authentication required", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "403", description = "Insufficient permissions", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "409", description = "Category name already in use", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
     public ResponseEntity<CategoryResponse> saveCategory(@RequestBody @Valid CreateCategoryRequest request) {
         log.debug("Request received to save category {}", request);
 
@@ -80,14 +87,14 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Update a category", description = "Update an existing category by ID.")
-    @ApiResponse(responseCode = "204", description = "Category successfully updated.")
-    @ApiResponse(responseCode = "400", description = "Invalid request data.")
-    @ApiResponse(responseCode = "401", description = "An error occurred while attempting to decode the Jwt: Malformed token.")
-    @ApiResponse(responseCode = "403", description = "Access Denied.")
-    @ApiResponse(responseCode = "404", description = "Category not found.")
-    @ApiResponse(responseCode = "409", description = "Category name already in use.")
-    @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
+    @Operation(summary = "Update category")
+    @ApiResponse(responseCode = "204", description = "Category updated")
+    @ApiResponse(responseCode = "400", description = "Invalid data", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "401", description = "Authentication required", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "403", description = "Insufficient permissions", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "404", description = "Category not found", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "409", description = "Category name already in use", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
     public ResponseEntity<Void> updateCategory(@PathVariable Long id, @RequestBody @Valid CreateCategoryRequest request) {
         log.debug("Request received to update category {}", request);
 
@@ -101,13 +108,13 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete a category", description = "Delete a specific category by ID.")
-    @ApiResponse(responseCode = "204", description = "Category successfully deleted.")
-    @ApiResponse(responseCode = "401", description = "An error occurred while attempting to decode the Jwt: Malformed token.")
-    @ApiResponse(responseCode = "403", description = "Access Denied.")
-    @ApiResponse(responseCode = "404", description = "Category not found.")
-    @ApiResponse(responseCode = "409", description = "Category has products linked to it.")
-    @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
+    @Operation(summary = "Delete category")
+    @ApiResponse(responseCode = "204", description = "Category deleted")
+    @ApiResponse(responseCode = "401", description = "Authentication required", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "403", description = "Insufficient permissions", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "404", description = "Category not found", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "409", description = "Category has associated products", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         log.debug("Request received to delete category by id {}", id);
 

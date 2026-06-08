@@ -1,6 +1,5 @@
 package com.github.geovanegsfarias.payment;
 
-import com.github.geovanegsfarias.configuration.StripeConfigurationProperties;
 import com.github.geovanegsfarias.exception.IllegalOperationException;
 import com.github.geovanegsfarias.exception.InsufficientStockException;
 import com.github.geovanegsfarias.exception.PaymentException;
@@ -23,24 +22,22 @@ import java.math.BigDecimal;
 public class StripeService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
-    private final StripeConfigurationProperties stripeProperties;
 
-    public StripeService(OrderRepository orderRepository, ProductRepository productRepository, StripeConfigurationProperties stripeProperties) {
+    public StripeService(OrderRepository orderRepository, ProductRepository productRepository) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
-        this.stripeProperties = stripeProperties;
     }
 
     public CheckoutResponse checkoutOrder(CheckoutRequest request, String email) {
-        var order = orderRepository.findByIdAndUserEmail(request.orderId(), email).orElseThrow(() -> new ResourceNotFoundException("Order not found."));
+        var order = orderRepository.findByIdAndUserEmail(request.orderId(), email).orElseThrow(() -> new ResourceNotFoundException("Order not found"));
 
         if (order.getStatus() != OrderStatus.PENDING) {
-            throw new IllegalOperationException("This order has already been completed.");
+            throw new IllegalOperationException("Only pending orders can be checked out");
         }
 
         for (OrderItem orderItem : order.getOrderItems()) {
             if (orderItem.getProduct().getStock() < orderItem.getQuantity()) {
-                throw new InsufficientStockException("Insufficient stock.");
+                throw new InsufficientStockException("Insufficient stock");
             }
         }
 
@@ -76,10 +73,11 @@ public class StripeService {
         try {
             session = Session.create(params);
         } catch (StripeException e) {
-            throw new PaymentException("Payment session creation failed: " + e.getMessage());
+            log.warn("Failed to create payment session: {}", e.getMessage());
+            throw new PaymentException("Failed to create payment session");
         }
 
-        return new CheckoutResponse("SUCCESS", "Payment session created.", session.getId(), session.getUrl());
+        return new CheckoutResponse("SUCCESS", "Payment session created", session.getId(), session.getUrl());
     }
 
     @Transactional

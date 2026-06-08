@@ -29,7 +29,7 @@ public class UserService {
 
     private void assertEmailIsAvailable(String email) {
         if (userRepository.existsByEmailIgnoreCase(email)) {
-            throw new ResourceAlreadyExistsException("Email already registered.");
+            throw new ResourceAlreadyExistsException("Email already registered");
         }
     }
 

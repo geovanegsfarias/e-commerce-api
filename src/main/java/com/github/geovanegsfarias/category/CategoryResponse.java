@@ -1,4 +1,8 @@
 package com.github.geovanegsfarias.category;
 
-public record CategoryResponse(Long id, String name) {
+import io.swagger.v3.oas.annotations.media.Schema;
+
+public record CategoryResponse(
+        @Schema(example = "1") Long id,
+        @Schema(example = "Electronics") String name) {
 }

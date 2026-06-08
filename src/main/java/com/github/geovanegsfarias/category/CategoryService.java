@@ -55,7 +55,7 @@ public class CategoryService {
     }
 
     private void assertCategoryHasNoProducts(Long id) {
-        if (productRepository.existsByCategoryId(id)) throw new ResourceInUseException("Category has associated products.");
+        if (productRepository.existsByCategoryId(id)) throw new ResourceInUseException("Category cannot be deleted because it has associated products");
     }
 
 }

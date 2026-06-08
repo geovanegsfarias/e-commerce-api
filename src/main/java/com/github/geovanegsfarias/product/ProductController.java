@@ -1,6 +1,8 @@
 package com.github.geovanegsfarias.product;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,10 +35,11 @@ public class ProductController {
     }
 
     @GetMapping
-    @Operation(summary = "Get all products", description = "Retrieve a list of all products.")
-    @ApiResponse(responseCode = "200", description = "Successfully retrieved the list of products.")
-    @ApiResponse(responseCode = "401", description = "An error occurred while attempting to decode the Jwt: Malformed token.")
-    @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
+    @Operation(summary = "List products")
+    @ApiResponse(responseCode = "200", description = "Products returned")
+    @ApiResponse(responseCode = "401", description = "Authentication required", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "403", description = "Insufficient permissions", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
     public ResponseEntity<Page<ProductResponse>> getAllProducts(@ParameterObject Pageable pageable) {
         log.debug("Request received to list all products");
 
@@ -46,11 +51,12 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get a single product", description = "Retrieve a specific product by ID.")
-    @ApiResponse(responseCode = "200", description = "Product retrieved successfully.")
-    @ApiResponse(responseCode = "401", description = "An error occurred while attempting to decode the Jwt: Malformed token.")
-    @ApiResponse(responseCode = "404", description = "Product not found.")
-    @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
+    @Operation(summary = "Get product")
+    @ApiResponse(responseCode = "200", description = "Product returned")
+    @ApiResponse(responseCode = "401", description = "Authentication required", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "403", description = "Insufficient permissions", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "404", description = "Product not found", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
     public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
         log.debug("Request received to find product by id {}", id);
 
@@ -62,13 +68,13 @@ public class ProductController {
     }
 
     @PostMapping
-    @Operation(summary = "Add a new product", description = "Create a new product.")
-    @ApiResponse(responseCode = "201", description = "Product successfully created.")
-    @ApiResponse(responseCode = "400", description = "Invalid request data.")
-    @ApiResponse(responseCode = "401", description = "An error occurred while attempting to decode the Jwt: Malformed token.")
-    @ApiResponse(responseCode = "403", description = "Access Denied.")
-    @ApiResponse(responseCode = "404", description = "Category not found.")
-    @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
+    @Operation(summary = "Create product")
+    @ApiResponse(responseCode = "201", description = "Product created")
+    @ApiResponse(responseCode = "400", description = "Invalid data", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "401", description = "Authentication required", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "403", description = "Insufficient permissions", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "404", description = "Category not found", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
     public ResponseEntity<ProductResponse> saveProduct(@RequestBody @Valid CreateProductRequest request) {
         log.debug("Request received to save product {}", request);
 
@@ -82,14 +88,13 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Update a product", description = "Update an existing product by ID.")
-    @ApiResponse(responseCode = "204", description = "Product successfully updated.")
-    @ApiResponse(responseCode = "400", description = "Invalid request data.")
-    @ApiResponse(responseCode = "401", description = "An error occurred while attempting to decode the Jwt: Malformed token.")
-    @ApiResponse(responseCode = "403", description = "Access Denied.")
-    @ApiResponse(responseCode = "404", description = "Product not found.")
-    @ApiResponse(responseCode = "404", description = "Category not found.")
-    @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
+    @Operation(summary = "Update product")
+    @ApiResponse(responseCode = "204", description = "Product updated")
+    @ApiResponse(responseCode = "400", description = "Invalid data", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "401", description = "Authentication required", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "403", description = "Insufficient permissions", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "404", description = "Product or category not found", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
     public ResponseEntity<Void> updateProduct(@RequestBody @Valid CreateProductRequest request, @PathVariable Long id) {
         log.debug("Request received to update product {}", request);
 
@@ -103,12 +108,12 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete a product", description = "Delete a specific product by ID.")
-    @ApiResponse(responseCode = "204", description = "Product successfully deleted.")
-    @ApiResponse(responseCode = "401", description = "An error occurred while attempting to decode the Jwt: Malformed token.")
-    @ApiResponse(responseCode = "403", description = "Access Denied.")
-    @ApiResponse(responseCode = "404", description = "Product not found.")
-    @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
+    @Operation(summary = "Delete product")
+    @ApiResponse(responseCode = "204", description = "Product deleted")
+    @ApiResponse(responseCode = "401", description = "Authentication required", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "403", description = "Insufficient permissions", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "404", description = "Product not found", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         log.debug("Request received to delete product by id {}", id);
 

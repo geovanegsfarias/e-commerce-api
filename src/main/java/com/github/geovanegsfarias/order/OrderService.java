@@ -59,7 +59,7 @@ public class OrderService {
 
     private void assertCartIsNotEmpty(List<CartItem> cartItems) {
         if (cartItems == null || cartItems.isEmpty()) {
-            throw new EmptyCartException("Your cart is empty");
+            throw new EmptyCartException("Cart is empty");
         }
     }
 

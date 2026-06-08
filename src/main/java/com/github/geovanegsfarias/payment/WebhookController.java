@@ -46,10 +46,10 @@ public class WebhookController {
             }
         } catch (SignatureVerificationException e) {
             log.error("Stripe signature error: {}", e.getMessage());
-            throw new PaymentException("Signature error");
+            throw new PaymentException("Invalid Stripe signature");
         } catch (Exception e) {
             log.error("Webhook error: {}", e.getMessage());
-            throw new PaymentException("Webhook error");
+            throw new PaymentException("Failed to process Stripe webhook");
         }
 
         return "ok";

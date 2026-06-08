@@ -4,6 +4,6 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 public record CreateCartItemRequest(
-        @NotNull(message = "The product id must not be null.") Long productId,
-        @Min(value = 1, message = "Add at least one unit of this product.") int quantity) {
+        @NotNull(message = "Product ID is required") Long productId,
+        @Min(value = 1, message = "Quantity must be at least 1") int quantity) {
 }
