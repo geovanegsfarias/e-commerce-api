@@ -32,7 +32,11 @@ public class CartController {
     @ApiResponse(responseCode = "404", description = "Cart not found.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<CartResponse> getCart(Authentication authentication) {
-        return ResponseEntity.ok(cartService.getByEmail(authentication.getName()));
+        var cart = cartService.findByEmailOrThrowException(authentication.getName());
+
+        var cartResponse = CartMapper.toCartResponse(cart);
+
+        return ResponseEntity.ok(cartResponse);
     }
 
     @PostMapping
@@ -42,7 +46,11 @@ public class CartController {
     @ApiResponse(responseCode = "404", description = "User not found.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<CartResponse> saveCart(Authentication authentication) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(cartService.save(authentication.getName()));
+        var savedCart = cartService.save(authentication.getName());
+
+        var cartResponse = CartMapper.toCartResponse(savedCart);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(cartResponse);
     }
 
     @DeleteMapping
@@ -53,6 +61,7 @@ public class CartController {
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<Void> deleteCart(Authentication authentication) {
         cartService.delete(authentication.getName());
+
         return ResponseEntity.noContent().build();
     }
 
@@ -66,7 +75,13 @@ public class CartController {
     @ApiResponse(responseCode = "404", description = "Product not found.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<CartItemResponse> saveCartItem(@RequestBody @Valid CreateCartItemRequest request, Authentication authentication) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(cartItemService.save(request, authentication.getName()));
+        var cartItemToSave = CartItemMapper.toCartItem(request);
+
+        var savedCartItem = cartItemService.save(cartItemToSave, request.productId(), authentication.getName());
+
+        var cartItemResponse = CartItemMapper.toCartItemResponse(savedCartItem);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(cartItemResponse);
     }
 
     @DeleteMapping("/items/{id}")
@@ -78,6 +93,7 @@ public class CartController {
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<Void> deleteCartItem(@PathVariable Long id, Authentication authentication) {
         cartItemService.delete(id, authentication.getName());
+
         return ResponseEntity.noContent().build();
     }
 

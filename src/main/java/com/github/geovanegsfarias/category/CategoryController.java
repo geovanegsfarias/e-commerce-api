@@ -29,7 +29,11 @@ public class CategoryController {
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the list of categories.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<List<CategoryResponse>> getAllCategories() {
-        return ResponseEntity.ok(categoryService.getAll());
+        var categories = categoryService.findAll();
+
+        var categoryResponseList = categories.stream().map(category -> CategoryMapper.toCategoryResponse(category)).toList();
+
+        return ResponseEntity.ok(categoryResponseList);
     }
 
     @GetMapping("/{id}")
@@ -39,7 +43,12 @@ public class CategoryController {
     @ApiResponse(responseCode = "404", description = "Category not found.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable Long id) {
-        return ResponseEntity.ok(categoryService.getById(id));
+        var category = categoryService.findByIdOrThrowException(id);
+
+        var categoryResponse = CategoryMapper.toCategoryResponse(category);
+
+        return ResponseEntity.ok(categoryResponse);
+
     }
 
     @PostMapping
@@ -51,20 +60,32 @@ public class CategoryController {
     @ApiResponse(responseCode = "409", description = "Category name already in use.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<CategoryResponse> saveCategory(@RequestBody @Valid CreateCategoryRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.save(request));
+        var categoryToSave = CategoryMapper.toCategory(request);
+
+        var savedCategory = categoryService.save(categoryToSave);
+
+        var categoryResponse = CategoryMapper.toCategoryResponse(savedCategory);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoryResponse);
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update a category", description = "Update an existing category by ID.")
-    @ApiResponse(responseCode = "200", description = "Category successfully updated.")
+    @ApiResponse(responseCode = "204", description = "Category successfully updated.")
     @ApiResponse(responseCode = "400", description = "Invalid request data.")
     @ApiResponse(responseCode = "401", description = "An error occurred while attempting to decode the Jwt: Malformed token.")
     @ApiResponse(responseCode = "403", description = "Access Denied.")
     @ApiResponse(responseCode = "404", description = "Category not found.")
     @ApiResponse(responseCode = "409", description = "Category name already in use.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
-    public ResponseEntity<CategoryResponse> updateCategory(@RequestBody @Valid CreateCategoryRequest request, @PathVariable Long id) {
-        return ResponseEntity.ok(categoryService.update(request, id));
+    public ResponseEntity<Void> updateCategory(@PathVariable Long id, @RequestBody @Valid CreateCategoryRequest request) {
+        var categoryToUpdate = CategoryMapper.toCategory(request);
+
+        categoryToUpdate.setId(id);
+
+        categoryService.update(categoryToUpdate);
+
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
@@ -77,6 +98,7 @@ public class CategoryController {
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         categoryService.delete(id);
+
         return ResponseEntity.noContent().build();
     }
 

@@ -33,12 +33,12 @@ public class WebhookController {
             switch (event.getType()) {
 
                 case "checkout.session.completed":
-                    Session session = (Session) event.getDataObjectDeserializer().getObject().orElse(null);
+                    var session = (Session) event.getDataObjectDeserializer().getObject().orElse(null);
                     if (session != null) stripeService.handlePaymentSuccess(session);
                     break;
 
                 case "checkout.session.expired":
-                    Session expiredSession = (Session) event.getDataObjectDeserializer().getObject().orElse(null);
+                    var expiredSession = (Session) event.getDataObjectDeserializer().getObject().orElse(null);
                     if (expiredSession != null) stripeService.handlePaymentFailed(expiredSession);
                     break;
 

@@ -34,7 +34,7 @@ public class CheckoutController {
     @ApiResponse(responseCode = "404", description = "Order not found.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<CheckoutResponse> checkoutOrder(@RequestBody @Valid CheckoutRequest request, Authentication authentication) {
-        CheckoutResponse response = stripeService.checkoutOrder(request, authentication.getName());
-        return ResponseEntity.ok().body(response);
+        var checkoutResponse = stripeService.checkoutOrder(request, authentication.getName());
+        return ResponseEntity.ok().body(checkoutResponse);
     }
 }

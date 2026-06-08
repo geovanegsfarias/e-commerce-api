@@ -1,8 +1,8 @@
 package com.github.geovanegsfarias.order;
 
-import com.github.geovanegsfarias.cart.Cart;
+import com.github.geovanegsfarias.cart.CartItem;
 import com.github.geovanegsfarias.cart.CartItemRepository;
-import com.github.geovanegsfarias.cart.CartRepository;
+import com.github.geovanegsfarias.cart.CartService;
 import com.github.geovanegsfarias.exception.EmptyCartException;
 import com.github.geovanegsfarias.exception.IllegalOperationException;
 import com.github.geovanegsfarias.exception.InsufficientStockException;
@@ -19,60 +19,80 @@ import java.util.List;
 @Service
 public class OrderService {
     private final OrderRepository orderRepository;
-    private final CartRepository cartRepository;
+    private final CartService cartService;
     private final CartItemRepository cartItemRepository;
 
     @Autowired
-    public OrderService(OrderRepository orderRepository, CartRepository cartRepository, CartItemRepository cartItemRepository) {
+    public OrderService(OrderRepository orderRepository, CartService cartService, CartItemRepository cartItemRepository) {
         this.orderRepository = orderRepository;
-        this.cartRepository = cartRepository;
+        this.cartService = cartService;
         this.cartItemRepository = cartItemRepository;
     }
 
-    public Page<OrderResponse> getAll(String email, Pageable pageable) {
-        return orderRepository.findAllByUserEmail(email, pageable)
-                .map(order -> OrderMapper.toOrderResponse(order));
+    public Page<Order> findAll(String userEmail, Pageable pageable) {
+        return orderRepository.findAllByUserEmail(userEmail, pageable);
     }
 
-    public OrderResponse getByIdAndEmail(Long id, String email) {
-        return OrderMapper.toOrderResponse(
-                orderRepository.findByIdAndUserEmail(id, email).orElseThrow(() -> new ResourceNotFoundException("Order not found."))
-        );
+    public Order findByIdAndEmailOrThrowException(Long id, String userEmail) {
+        return orderRepository.findByIdAndUserEmail(id, userEmail).orElseThrow(() -> new ResourceNotFoundException("Order not found"));
     }
 
     @Transactional
-    public OrderResponse save(String email) {
-        Cart cart = cartRepository.findByUserEmail(email).orElseThrow(() -> new ResourceNotFoundException("Cart not found."));
-
-        if (cart.getCartItems() == null || cart.getCartItems().isEmpty()) {
-            throw new EmptyCartException("Your cart is empty.");
-        }
-
-        BigDecimal totalPrice = cart.getCartItems().stream()
-                .map(cartItem -> cartItem.getProduct().getPrice().multiply(new BigDecimal(cartItem.getQuantity())))
-                .reduce(BigDecimal.ZERO, (sum, nextValue) -> sum.add(nextValue));
-
-        Order order = new Order(totalPrice, cart.getUser(), null);
-
-        List<OrderItem> orderItems = cart.getCartItems().stream()
-                .map(cartItem -> {
-                    if (cartItem.getProduct().getStock() < cartItem.getQuantity())
-                        throw new InsufficientStockException("Insufficient stock.");
-                    return new OrderItem(cartItem.getProduct().getPrice(), cartItem.getQuantity(), order, cartItem.getProduct());
-                }).toList();
-
+    public Order save(String userEmail) {
+        var cart = cartService.findByEmailOrThrowException(userEmail);
+        var cartItems = cart.getCartItems();
+        assertCartIsNotEmpty(cartItems);
+        var orderTotalPrice = sumTotalPrice(cartItems);
+        var order = new Order(orderTotalPrice, cart.getUser(), null);
+        var orderItems = createOrderItems(cartItems, order);
         order.setOrderItems(orderItems);
-
-        Order savedOrder = orderRepository.save(order);
+        var savedOrder = orderRepository.save(order);
         cartItemRepository.deleteAllByCartId(cart.getId());
-        return OrderMapper.toOrderResponse(savedOrder);
+        return savedOrder;
     }
 
-    public void delete(Long id, String email) {
-        Order order = orderRepository.findByIdAndUserEmail(id, email).orElseThrow(() -> new ResourceNotFoundException("Order not found."));
-        if (order.getStatus() != OrderStatus.PENDING)
-            throw new IllegalOperationException("Only pending orders can be deleted.");
-        orderRepository.delete(order);
+    public void delete(Long id, String userEmail) {
+        var orderToDelete = findByIdAndEmailOrThrowException(id, userEmail);
+        assertOrderIsPending(orderToDelete);
+        orderRepository.delete(orderToDelete);
+    }
+
+    private void assertCartIsNotEmpty(List<CartItem> cartItems) {
+        if (cartItems == null || cartItems.isEmpty()) {
+            throw new EmptyCartException("Your cart is empty");
+        }
+    }
+
+    private void assertStockIsAvailable(CartItem cartItem) {
+        if (cartItem.getProduct().getStock() < cartItem.getQuantity()) {
+            throw new InsufficientStockException("Insufficient stock");
+        }
+    }
+
+    private void assertOrderIsPending(Order order) {
+        if (order.getStatus() != OrderStatus.PENDING) {
+            throw new IllegalOperationException("Only pending orders can be deleted");
+        }
+    }
+
+    private BigDecimal sumTotalPrice(List<CartItem> cartItems) {
+        return cartItems.stream()
+                .map(cartItem -> cartItem.getProduct().getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add); // (sum, nextValue) -> sum.add(nextValue)
+    }
+
+    private List<OrderItem> createOrderItems(List<CartItem> cartItems, Order order) {
+        return cartItems.stream()
+                .map(cartItem -> {
+                            assertStockIsAvailable(cartItem);
+
+                            return new OrderItem(
+                                    cartItem.getProduct().getPrice(),
+                                    cartItem.getQuantity(),
+                                    order, cartItem.getProduct()
+                            );
+                        })
+                .toList();
     }
 
 }

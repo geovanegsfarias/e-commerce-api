@@ -1,7 +1,6 @@
 package com.github.geovanegsfarias.product;
 
-import com.github.geovanegsfarias.category.Category;
-import com.github.geovanegsfarias.category.CategoryRepository;
+import com.github.geovanegsfarias.category.CategoryService;
 import com.github.geovanegsfarias.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,46 +10,42 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
-    private final CategoryRepository categoryRepository;
+    private final CategoryService categoryService;
 
     @Autowired
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
+    public ProductService(ProductRepository productRepository, CategoryService categoryService) {
         this.productRepository = productRepository;
-        this.categoryRepository = categoryRepository;
+        this.categoryService = categoryService;
     }
 
-    public Page<ProductResponse> getAll(Pageable pageable) {
-        return productRepository.findAll(pageable)
-                .map(product -> ProductMapper.toProductResponse(product));
+    public Page<Product> findAll(Pageable pageable) {
+        return productRepository.findAll(pageable);
     }
 
-    public ProductResponse getById(Long id) {
-        return ProductMapper.toProductResponse(
-                productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product not found."))
-        );
+    public Product findByIdOrThrowException(Long id) {
+        return productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product not found"));
     }
 
-    public ProductResponse save(CreateProductRequest request) {
-        Category category = categoryRepository.findById(request.categoryId()).orElseThrow(() -> new ResourceNotFoundException("Category not found."));
-
-        return ProductMapper.toProductResponse(
-                productRepository.save(ProductMapper.toProduct(request, category))
-        );
+    public Product save(Product productToSave, Long categoryId) {
+        var category = categoryService.findByIdOrThrowException(categoryId);
+        productToSave.setCategory(category);
+        return productRepository.save(productToSave);
     }
 
-    public ProductResponse update(CreateProductRequest request, Long id) {
-        Product product = productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product not found."));
-        Category category = categoryRepository.findById(request.categoryId()).orElseThrow(() -> new ResourceNotFoundException("Category not found."));
-        product.setName(request.name());
-        product.setDescription(request.description());
-        product.setPrice(request.price());
-        product.setStock(request.stock());
-        product.setCategory(category);
-        return ProductMapper.toProductResponse(productRepository.save(product));
+    public void update(Product productToUpdate, Long categoryId) {
+        var savedProduct = findByIdOrThrowException(productToUpdate.getId());
+        var category = categoryService.findByIdOrThrowException(categoryId);
+        savedProduct.setName(productToUpdate.getName());
+        savedProduct.setDescription(productToUpdate.getDescription());
+        savedProduct.setPrice(productToUpdate.getPrice());
+        savedProduct.setStock(productToUpdate.getStock());
+        savedProduct.setCategory(category);
+        productRepository.save(savedProduct);
     }
 
     public void delete(Long id) {
-        Product product = productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product not found."));
-        productRepository.delete(product);
+        var productToDelete = findByIdOrThrowException(id);
+        productRepository.delete(productToDelete);
     }
+
 }

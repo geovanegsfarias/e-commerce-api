@@ -12,6 +12,12 @@ public class CartItemMapper {
         );
     }
 
+    public static CartItem toCartItem(CreateCartItemRequest request) {
+        return new CartItem(
+                request.quantity()
+        );
+    }
+
     public static CartItemResponse toCartItemResponse(CartItem cartItem) {
         return new CartItemResponse(
                 cartItem.getId(),

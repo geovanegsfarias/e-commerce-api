@@ -33,9 +33,7 @@ public class SecurityConfig {
     private final JwtConfigurationProperties jwtProperties;
 
 
-    public SecurityConfig(
-            @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver,
-            JwtConfigurationProperties jwtProperties) {
+    public SecurityConfig(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver, JwtConfigurationProperties jwtProperties) {
         this.resolver = resolver;
         this.jwtProperties = jwtProperties;
     }
@@ -84,11 +82,11 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
-        JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        grantedAuthoritiesConverter.setAuthorityPrefix("");
+        var jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
 
-        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
+        var jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
         return jwtAuthenticationConverter;
     }
 

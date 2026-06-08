@@ -24,7 +24,7 @@ public class DevDataInitializer {
     public CommandLineRunner seedUsers(UserRepository userRepository, PasswordEncoder encoder) {
         return args -> {
             if (!userRepository.existsByEmailIgnoreCase(configurationProperties.email())) {
-                User admin = new User("Admin", configurationProperties.email(), encoder.encode(configurationProperties.password()));
+                var admin = new User("Admin", configurationProperties.email(), encoder.encode(configurationProperties.password()));
                 admin.setRole(UserRole.ROLE_ADMIN);
                 userRepository.save(admin);
             }

@@ -31,7 +31,11 @@ public class OrderController {
     @ApiResponse(responseCode = "401", description = "An error occurred while attempting to decode the Jwt: Malformed token.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<Page<OrderResponse>> getAllOrders(Authentication authentication, @ParameterObject Pageable pageable) {
-        return ResponseEntity.ok(orderService.getAll(authentication.getName(), pageable));
+        var orders = orderService.findAll(authentication.getName(), pageable);
+
+        var orderResponsePage = orders.map(order -> OrderMapper.toOrderResponse(order));
+
+        return ResponseEntity.ok(orderResponsePage);
     }
 
     @GetMapping("/{id}")
@@ -41,7 +45,11 @@ public class OrderController {
     @ApiResponse(responseCode = "404", description = "Order not found.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<OrderResponse> getOrder(@PathVariable Long id, Authentication authentication) {
-        return ResponseEntity.ok(orderService.getByIdAndEmail(id, authentication.getName()));
+        var order = orderService.findByIdAndEmailOrThrowException(id, authentication.getName());
+
+        var orderResponse = OrderMapper.toOrderResponse(order);
+
+        return ResponseEntity.ok(orderResponse);
     }
 
     @PostMapping
@@ -53,7 +61,11 @@ public class OrderController {
     @ApiResponse(responseCode = "404", description = "User not found.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<OrderResponse> saveOrder(Authentication authentication) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.save(authentication.getName()));
+        var savedOrder = orderService.save(authentication.getName());
+
+        var orderResponse = OrderMapper.toOrderResponse(savedOrder);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderResponse);
     }
 
     @DeleteMapping("/{id}")
@@ -65,6 +77,7 @@ public class OrderController {
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<Void> deleteOrder(@PathVariable Long id, Authentication authentication) {
         orderService.delete(id, authentication.getName());
+
         return ResponseEntity.noContent().build();
     }
 

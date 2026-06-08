@@ -5,7 +5,6 @@ import com.github.geovanegsfarias.exception.IllegalOperationException;
 import com.github.geovanegsfarias.exception.InsufficientStockException;
 import com.github.geovanegsfarias.exception.PaymentException;
 import com.github.geovanegsfarias.exception.ResourceNotFoundException;
-import com.github.geovanegsfarias.order.Order;
 import com.github.geovanegsfarias.order.OrderItem;
 import com.github.geovanegsfarias.order.OrderRepository;
 import com.github.geovanegsfarias.order.OrderStatus;
@@ -27,17 +26,14 @@ public class StripeService {
     private final ProductRepository productRepository;
     private final StripeConfigurationProperties stripeProperties;
 
-    public StripeService(
-            OrderRepository orderRepository,
-            ProductRepository productRepository,
-            StripeConfigurationProperties stripeProperties) {
+    public StripeService(OrderRepository orderRepository, ProductRepository productRepository, StripeConfigurationProperties stripeProperties) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
         this.stripeProperties = stripeProperties;
     }
 
     public CheckoutResponse checkoutOrder(CheckoutRequest request, String email) {
-        Order order = orderRepository.findByIdAndUserEmail(request.orderId(), email).orElseThrow(() -> new ResourceNotFoundException("Order not found."));
+        var order = orderRepository.findByIdAndUserEmail(request.orderId(), email).orElseThrow(() -> new ResourceNotFoundException("Order not found."));
 
         if (order.getStatus() != OrderStatus.PENDING) {
             throw new IllegalOperationException("This order has already been completed.");
@@ -110,7 +106,7 @@ public class StripeService {
 
     @Transactional
     public void handlePaymentFailed(Session session) {
-        String orderId = session.getClientReferenceId();
+        var orderId = session.getClientReferenceId();
         if (orderId == null) return;
 
         orderRepository.findById(Long.parseLong(orderId)).ifPresent(order -> {

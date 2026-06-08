@@ -20,46 +20,42 @@ public class CategoryService {
         this.productRepository = productRepository;
     }
 
-    public List<CategoryResponse> getAll() {
-        return categoryRepository.findAll().stream()
-                .map(category -> CategoryMapper.toCategoryResponse(category)).toList();
+    public List<Category> findAll() {
+        return categoryRepository.findAll();
     }
 
-    public CategoryResponse getById(Long id) {
-        return CategoryMapper.toCategoryResponse(
-                categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Category not found."))
-        );
+    public Category findByIdOrThrowException(Long id) {
+        return categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Category not found"));
     }
 
-    public CategoryResponse save(CreateCategoryRequest request) {
-        if (categoryRepository.existsByNameIgnoreCase(request.name())) {
-            throw new ResourceAlreadyExistsException("Category name already in use.");
-        }
-
-        return CategoryMapper.toCategoryResponse(
-                categoryRepository.save(CategoryMapper.toCategory(request))
-        );
+    public Category save(Category categoryToSave) {
+        assertCategoryNameIsAvailable(categoryToSave.getName());
+        return categoryRepository.save(categoryToSave);
     }
 
-    public CategoryResponse update(CreateCategoryRequest request, Long id) {
-        Category category = categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Category not found."));
-
-        if (categoryRepository.existsByNameIgnoreCaseAndIdNot(request.name(), id)) {
-            throw new ResourceAlreadyExistsException("Category name already in use.");
-        }
-
-        category.setName(request.name());
-        return CategoryMapper.toCategoryResponse(categoryRepository.save(category));
+    public void update(Category categoryToUpdate) {
+        var savedCategory = findByIdOrThrowException(categoryToUpdate.getId());
+        assertCategoryNameIsAvailable(categoryToUpdate.getName(), categoryToUpdate.getId());
+        savedCategory.setName(categoryToUpdate.getName());
+        categoryRepository.save(savedCategory);
     }
 
     public void delete(Long id) {
-        Category category = categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Category not found."));
+        var categoryToDelete = findByIdOrThrowException(id);
+        assertCategoryHasNoProducts(id);
+        categoryRepository.delete(categoryToDelete);
+    }
 
-        if (productRepository.existsByCategoryId(id)) {
-            throw new ResourceInUseException("Category has products linked to it.");
-        }
+    private void assertCategoryNameIsAvailable(String name) {
+        if (categoryRepository.existsByNameIgnoreCase(name)) throw new ResourceAlreadyExistsException("Category name already in use");
+    }
 
-        categoryRepository.delete(category);
+    private void assertCategoryNameIsAvailable(String name, Long id) {
+        if (categoryRepository.existsByNameIgnoreCaseAndIdNot(name, id)) throw new ResourceAlreadyExistsException("Category name already in use");
+    }
+
+    private void assertCategoryHasNoProducts(Long id) {
+        if (productRepository.existsByCategoryId(id)) throw new ResourceInUseException("Category has associated products.");
     }
 
 }

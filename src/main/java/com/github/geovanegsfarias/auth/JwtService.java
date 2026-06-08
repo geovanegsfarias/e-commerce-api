@@ -21,16 +21,16 @@ public class JwtService {
     }
 
     public String generateToken(Authentication authentication) {
-        Instant now = Instant.now();
+        var instant = Instant.now();
 
-        String scopes = authentication.getAuthorities().stream()
+        var scopes = authentication.getAuthorities().stream()
                 .map(authority -> authority.getAuthority())
                 .collect(Collectors.joining(" "));
 
         var claims = JwtClaimsSet.builder()
                 .issuer(jwtProperties.issuer())
-                .issuedAt(now)
-                .expiresAt(now.plus(jwtProperties.expiration()))
+                .issuedAt(instant)
+                .expiresAt(instant.plus(jwtProperties.expiration()))
                 .subject(authentication.getName())
                 .claim("scope", scopes)
                 .build();

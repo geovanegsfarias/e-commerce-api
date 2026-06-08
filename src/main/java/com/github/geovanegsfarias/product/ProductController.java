@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 @RequestMapping("/v1/product")
 @SecurityRequirement(name = "Bearer Authentication")
@@ -31,7 +32,11 @@ public class ProductController {
     @ApiResponse(responseCode = "401", description = "An error occurred while attempting to decode the Jwt: Malformed token.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<Page<ProductResponse>> getAllProducts(@ParameterObject Pageable pageable) {
-        return ResponseEntity.ok(productService.getAll(pageable));
+        var products = productService.findAll(pageable);
+
+        var productResponseList = products.map(product -> ProductMapper.toProductResponse(product));
+
+        return ResponseEntity.ok(productResponseList);
     }
 
     @GetMapping("/{id}")
@@ -41,7 +46,11 @@ public class ProductController {
     @ApiResponse(responseCode = "404", description = "Product not found.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
-        return ResponseEntity.ok(productService.getById(id));
+        var product = productService.findByIdOrThrowException(id);
+
+        var productResponse = ProductMapper.toProductResponse(product);
+
+        return ResponseEntity.ok(productResponse);
     }
 
     @PostMapping
@@ -53,20 +62,32 @@ public class ProductController {
     @ApiResponse(responseCode = "404", description = "Category not found.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<ProductResponse> saveProduct(@RequestBody @Valid CreateProductRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(productService.save(request));
+        var productToSave = ProductMapper.toProduct(request);
+
+        var savedProduct = productService.save(productToSave, request.categoryId());
+
+        var productResponse = ProductMapper.toProductResponse(savedProduct);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(productResponse);
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update a product", description = "Update an existing product by ID.")
-    @ApiResponse(responseCode = "200", description = "Product successfully updated.")
+    @ApiResponse(responseCode = "204", description = "Product successfully updated.")
     @ApiResponse(responseCode = "400", description = "Invalid request data.")
     @ApiResponse(responseCode = "401", description = "An error occurred while attempting to decode the Jwt: Malformed token.")
     @ApiResponse(responseCode = "403", description = "Access Denied.")
     @ApiResponse(responseCode = "404", description = "Product not found.")
     @ApiResponse(responseCode = "404", description = "Category not found.")
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
-    public ResponseEntity<ProductResponse> updateProduct(@RequestBody @Valid CreateProductRequest request, @PathVariable Long id) {
-        return ResponseEntity.ok(productService.update(request, id));
+    public ResponseEntity<Void> updateProduct(@RequestBody @Valid CreateProductRequest request, @PathVariable Long id) {
+        var productToUpdate = ProductMapper.toProduct(request);
+
+        productToUpdate.setId(id);
+
+        productService.update(productToUpdate, request.categoryId());
+
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
@@ -78,6 +99,7 @@ public class ProductController {
     @ApiResponse(responseCode = "500", description = "Unexpected error occurred.")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         productService.delete(id);
+
         return ResponseEntity.noContent().build();
     }
 

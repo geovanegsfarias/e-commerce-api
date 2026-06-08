@@ -1,17 +1,15 @@
 package com.github.geovanegsfarias.product;
 
-import com.github.geovanegsfarias.category.Category;
 import com.github.geovanegsfarias.category.CategoryMapper;
 
 public class ProductMapper {
 
-    public static Product toProduct(CreateProductRequest request, Category category) {
+    public static Product toProduct(CreateProductRequest request) {
         return new Product(
                 request.name(),
                 request.description(),
                 request.price(),
-                request.stock(),
-                category
+                request.stock()
         );
     }
 
