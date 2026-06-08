@@ -1,10 +1,7 @@
 package com.github.geovanegsfarias.exception;
 
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -13,151 +10,101 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.time.Instant;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ResourceAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponse> handleResourceAlreadyExistsException(ResourceAlreadyExistsException e, WebRequest request) {
-        var errorResponse = new ErrorResponse(
-                HttpStatus.CONFLICT.value(),
-                Instant.now(),
-                e.getMessage(),
-                request.getDescription(false));
-
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    public ResponseEntity<ProblemDetail> handleResourceAlreadyExistsException(ResourceAlreadyExistsException e, WebRequest request) {
+        var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, e.getMessage());
+        
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(problemDetail);
     }
 
     @Override
     public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException e, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        var errorMessage = e.getBindingResult().getFieldErrors()
+        var errorList = e.getBindingResult().getFieldErrors()
                 .stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .filter(Objects::nonNull)
                 .sorted()
-                .collect(Collectors.joining(", "));
+                .toList();
 
-        var errorResponse = new ErrorResponse(
-                status.value(),
-                Instant.now(),
-                errorMessage,
-                request.getDescription(false));
+        var problemDetail = ProblemDetail.forStatusAndDetail(status, "Validation error");
+        problemDetail.setProperty("errors", errorList);
 
-        return ResponseEntity.status(status).body(errorResponse);
+        return ResponseEntity.status(status).body(problemDetail);
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<ErrorResponse> handleAuthenticationException(Exception e, WebRequest request) {
-        var errorResponse = new ErrorResponse(
-                HttpStatus.UNAUTHORIZED.value(),
-                Instant.now(),
-                e.getMessage(),
-                request.getDescription(false)
-        );
+    public ResponseEntity<ProblemDetail> handleAuthenticationException(Exception e, WebRequest request) {
+        var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.getMessage());
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(problemDetail);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException e, WebRequest request) {
-        var errorResponse = new ErrorResponse(
-                HttpStatus.FORBIDDEN.value(),
-                Instant.now(),
-                e.getMessage(),
-                request.getDescription(false));
+    public ResponseEntity<ProblemDetail> handleAccessDeniedException(AccessDeniedException e, WebRequest request) {
+        var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, e.getMessage());
 
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(problemDetail);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException e, WebRequest request) {
-        var errorResponse = new ErrorResponse(
-                HttpStatus.NOT_FOUND.value(),
-                Instant.now(),
-                e.getMessage(),
-                request.getDescription(false));
+    public ResponseEntity<ProblemDetail> handleResourceNotFoundException(ResourceNotFoundException e, WebRequest request) {
+        var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail);
     }
 
     @ExceptionHandler(ResourceInUseException.class)
-    public ResponseEntity<ErrorResponse> handleResourceInUseException(ResourceInUseException e, WebRequest request) {
-        var errorResponse = new ErrorResponse(
-                HttpStatus.CONFLICT.value(),
-                Instant.now(),
-                e.getMessage(),
-                request.getDescription(false));
+    public ResponseEntity<ProblemDetail> handleResourceInUseException(ResourceInUseException e, WebRequest request) {
+        var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, e.getMessage());
 
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(problemDetail);
     }
 
     @ExceptionHandler(EmptyCartException.class)
-    public ResponseEntity<ErrorResponse> handleEmptyCartException(EmptyCartException e, WebRequest request) {
-        var errorResponse = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                Instant.now(),
-                e.getMessage(),
-                request.getDescription(false));
+    public ResponseEntity<ProblemDetail> handleEmptyCartException(EmptyCartException e, WebRequest request) {
+        var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail);
     }
 
     @ExceptionHandler(InsufficientStockException.class)
-    public ResponseEntity<ErrorResponse> handleInsufficientStockException(InsufficientStockException e, WebRequest request) {
-        var errorResponse = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                Instant.now(),
-                e.getMessage(),
-                request.getDescription(false));
+    public ResponseEntity<ProblemDetail> handleInsufficientStockException(InsufficientStockException e, WebRequest request) {
+        var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail);
     }
 
     @ExceptionHandler(ForbiddenAccessException.class)
-    public ResponseEntity<ErrorResponse> handleForbiddenAccessException(ForbiddenAccessException e, WebRequest request) {
-        var errorResponse = new ErrorResponse(
-                HttpStatus.FORBIDDEN.value(),
-                Instant.now(),
-                e.getMessage(),
-                request.getDescription(false));
+    public ResponseEntity<ProblemDetail> handleForbiddenAccessException(ForbiddenAccessException e, WebRequest request) {
+        var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, e.getMessage());
 
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(problemDetail);
     }
 
     @ExceptionHandler(IllegalOperationException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalOperationException(IllegalOperationException e, WebRequest request) {
-        var errorResponse = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                Instant.now(),
-                e.getMessage(),
-                request.getDescription(false));
+    public ResponseEntity<ProblemDetail> handleIllegalOperationException(IllegalOperationException e, WebRequest request) {
+        var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail);
     }
 
     @ExceptionHandler(PaymentException.class)
-    public ResponseEntity<ErrorResponse> handlePaymentException(PaymentException e, WebRequest request) {
-        var errorResponse = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                Instant.now(),
-                e.getMessage(),
-                request.getDescription(false));
+    public ResponseEntity<ProblemDetail> handlePaymentException(PaymentException e, WebRequest request) {
+        var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGlobalException(Exception e, WebRequest request) {
-        var errorResponse = new ErrorResponse(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                Instant.now(),
-                e.getMessage(),
-                request.getDescription(false));
+    public ResponseEntity<ProblemDetail> handleGlobalException(Exception e, WebRequest request) {
+        var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected internal error");
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(problemDetail);
     }
 
 }
