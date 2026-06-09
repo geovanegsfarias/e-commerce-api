@@ -2,6 +2,8 @@ package com.github.geovanegsfarias.cart;
 
 import com.github.geovanegsfarias.user.User;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,6 +14,8 @@ import java.util.List;
 @Table(name = "cart")
 @Getter
 @Setter
+@AllArgsConstructor
+@Builder
 public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

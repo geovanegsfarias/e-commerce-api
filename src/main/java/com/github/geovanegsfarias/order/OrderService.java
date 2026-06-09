@@ -85,12 +85,12 @@ public class OrderService {
         return cartItems.stream()
                 .map(cartItem -> {
                             assertStockIsAvailable(cartItem);
-
-                            return new OrderItem(
-                                    cartItem.getProduct().getPrice(),
-                                    cartItem.getQuantity(),
-                                    order, cartItem.getProduct()
-                            );
+                            return OrderItem.builder()
+                                    .price(cartItem.getProduct().getPrice())
+                                    .quantity(cartItem.getQuantity())
+                                    .order(order)
+                                    .product(cartItem.getProduct())
+                                    .build();
                         })
                 .toList();
     }

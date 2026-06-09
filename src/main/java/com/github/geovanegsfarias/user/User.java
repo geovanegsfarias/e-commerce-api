@@ -3,6 +3,8 @@ package com.github.geovanegsfarias.user;
 import com.github.geovanegsfarias.cart.Cart;
 import com.github.geovanegsfarias.order.Order;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,6 +14,8 @@ import java.util.List;
 @Table(name = "users")
 @Getter
 @Setter
+@AllArgsConstructor
+@Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

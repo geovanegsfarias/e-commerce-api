@@ -2,6 +2,8 @@ package com.github.geovanegsfarias.order;
 
 import com.github.geovanegsfarias.product.Product;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,6 +13,8 @@ import java.math.BigDecimal;
 @Table(name = "order_item")
 @Getter
 @Setter
+@AllArgsConstructor
+@Builder
 public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,13 +31,6 @@ public class OrderItem {
     private Product product;
 
     public OrderItem() {
-    }
-
-    public OrderItem(BigDecimal price, int quantity, Order order, Product product) {
-        this.price = price;
-        this.quantity = quantity;
-        this.order = order;
-        this.product = product;
     }
 
 }

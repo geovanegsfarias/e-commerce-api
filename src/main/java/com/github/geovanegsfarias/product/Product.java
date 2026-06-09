@@ -4,6 +4,8 @@ import com.github.geovanegsfarias.cart.CartItem;
 import com.github.geovanegsfarias.category.Category;
 import com.github.geovanegsfarias.order.OrderItem;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,6 +16,8 @@ import java.util.List;
 @Table(name = "product")
 @Getter
 @Setter
+@AllArgsConstructor
+@Builder
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

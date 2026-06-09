@@ -58,7 +58,7 @@ public class CartItemService {
     private CartItem createCartItem(Cart cart, Product product, int quantity) {
         assertStockIsAvailable(product, quantity);
 
-        var cartItem = new CartItem(cart, product, quantity);
+        var cartItem = CartItem.builder().cart(cart).product(product).quantity(quantity).build();
 
         return cartItemRepository.save(cartItem);
     }
