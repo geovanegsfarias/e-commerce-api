@@ -23,7 +23,7 @@ class CategoryServiceTest {
     @Mock
     private ProductRepository productRepository;
     @InjectMocks
-    private CategoryService service;
+    private CategoryService categoryService;
     private final CategoryUtils utils = new CategoryUtils();
 
     @Test
@@ -34,7 +34,7 @@ class CategoryServiceTest {
 
         BDDMockito.when(categoryRepository.findAll()).thenReturn(expectedCategories);
 
-        var categories = service.findAll();
+        var categories = categoryService.findAll();
 
         Assertions.assertThat(categories).hasSameElementsAs(expectedCategories);
     }
@@ -47,7 +47,7 @@ class CategoryServiceTest {
 
         BDDMockito.when(categoryRepository.findById(expectedCategory.getId())).thenReturn(Optional.of(expectedCategory));
 
-        var category = service.findByIdOrThrowException(expectedCategory.getId());
+        var category = categoryService.findByIdOrThrowException(expectedCategory.getId());
 
         Assertions.assertThat(expectedCategory).isEqualTo(category);
     }
@@ -61,7 +61,7 @@ class CategoryServiceTest {
         BDDMockito.when(categoryRepository.findById(savedCategory.getId())).thenReturn(Optional.empty());
 
         Assertions.assertThatException()
-                .isThrownBy(() -> service.findByIdOrThrowException(savedCategory.getId()))
+                .isThrownBy(() -> categoryService.findByIdOrThrowException(savedCategory.getId()))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .withMessage("Category not found");
     }
@@ -75,7 +75,7 @@ class CategoryServiceTest {
 
         BDDMockito.when(categoryRepository.save(categoryToSave)).thenReturn(expectedSavedCategory);
 
-        var savedCategory = service.save(categoryToSave);
+        var savedCategory = categoryService.save(categoryToSave);
 
         Assertions.assertThat(savedCategory).isEqualTo(expectedSavedCategory);
     }
@@ -89,7 +89,7 @@ class CategoryServiceTest {
         BDDMockito.when(categoryRepository.existsByNameIgnoreCase(categoryToSave.getName())).thenReturn(true);
 
         Assertions.assertThatException()
-                .isThrownBy(() -> service.save(categoryToSave))
+                .isThrownBy(() -> categoryService.save(categoryToSave))
                 .isInstanceOf(ResourceAlreadyExistsException.class)
                 .withMessage("Category name already in use");
     }
@@ -103,7 +103,7 @@ class CategoryServiceTest {
         BDDMockito.when(categoryRepository.findById(categoryToUpdate.getId())).thenReturn(Optional.of(categoryToUpdate));
         BDDMockito.when(categoryRepository.existsByNameIgnoreCaseAndIdNot(categoryToUpdate.getName(), categoryToUpdate.getId())).thenReturn(false);
 
-        Assertions.assertThatNoException().isThrownBy(() -> service.update(categoryToUpdate));
+        Assertions.assertThatNoException().isThrownBy(() -> categoryService.update(categoryToUpdate));
         BDDMockito.verify(categoryRepository).save(categoryToUpdate);
     }
 
@@ -116,7 +116,7 @@ class CategoryServiceTest {
         BDDMockito.when(categoryRepository.findById(categoryToUpdate.getId())).thenReturn(Optional.empty());
 
         Assertions.assertThatException()
-                .isThrownBy(() -> service.update(categoryToUpdate))
+                .isThrownBy(() -> categoryService.update(categoryToUpdate))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .withMessage("Category not found");
     }
@@ -131,7 +131,7 @@ class CategoryServiceTest {
         BDDMockito.when(categoryRepository.existsByNameIgnoreCaseAndIdNot(categoryToUpdate.getName(), categoryToUpdate.getId())).thenReturn(true);
 
         Assertions.assertThatException()
-                .isThrownBy(() -> service.update(categoryToUpdate))
+                .isThrownBy(() -> categoryService.update(categoryToUpdate))
                 .isInstanceOf(ResourceAlreadyExistsException.class)
                 .withMessage("Category name already in use");
     }
@@ -146,7 +146,7 @@ class CategoryServiceTest {
         BDDMockito.when(productRepository.existsByCategoryId(categoryToDelete.getId())).thenReturn(false);
         BDDMockito.doNothing().when(categoryRepository).delete(categoryToDelete);
 
-        Assertions.assertThatNoException().isThrownBy(() -> service.delete(categoryToDelete.getId()));
+        Assertions.assertThatNoException().isThrownBy(() -> categoryService.delete(categoryToDelete.getId()));
         BDDMockito.verify(categoryRepository).delete(categoryToDelete);
     }
 
@@ -159,7 +159,7 @@ class CategoryServiceTest {
         BDDMockito.when(categoryRepository.findById(categoryToDelete.getId())).thenReturn(Optional.empty());
 
         Assertions.assertThatException()
-                .isThrownBy(() -> service.delete(categoryToDelete.getId()))
+                .isThrownBy(() -> categoryService.delete(categoryToDelete.getId()))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .withMessage("Category not found");
     }
@@ -174,7 +174,7 @@ class CategoryServiceTest {
         BDDMockito.when(productRepository.existsByCategoryId(categoryToDelete.getId())).thenReturn(true);
 
         Assertions.assertThatException()
-                .isThrownBy(() -> service.delete(categoryToDelete.getId()))
+                .isThrownBy(() -> categoryService.delete(categoryToDelete.getId()))
                 .isInstanceOf(ResourceInUseException.class)
                 .withMessage("Category cannot be deleted because it has associated products");
 
