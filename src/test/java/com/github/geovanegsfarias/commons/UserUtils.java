@@ -11,7 +11,7 @@ public class UserUtils {
         return User.builder()
                 .name("User")
                 .email("user@gmail.com")
-                .password("{bcrypt}$2a$10$zDReSHJiP0DIfAucmf0RnO5RLKjqEeaEKzh3PSueyMG54ku95EfZu")
+                .password("{bcrypt}$2a$10$yvxv.udlMjSHxePUTYeZG.i5rxBjs2rwd2kM08P7qp1GlPvWoRaCG")
                 .role(UserRole.ROLE_USER)
                 .build();
     }
@@ -21,7 +21,7 @@ public class UserUtils {
                 .id(1L)
                 .name("User")
                 .email("user@gmail.com")
-                .password("{bcrypt}$2a$10$zDReSHJiP0DIfAucmf0RnO5RLKjqEeaEKzh3PSueyMG54ku95EfZu")
+                .password("{bcrypt}$2a$10$yvxv.udlMjSHxePUTYeZG.i5rxBjs2rwd2kM08P7qp1GlPvWoRaCG")
                 .role(UserRole.ROLE_USER)
                 .build();
     }
