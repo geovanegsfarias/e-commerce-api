@@ -1,0 +1,37 @@
+{
+  "content": [
+    {
+      "id": 1,
+      "name": "Wireless headphones",
+      "description": "Noise-canceling wireless headphones",
+      "price": "299.90",
+      "stock": 25,
+      "category": {
+        "id": 1,
+        "name": "Electronics"
+      }
+    },
+    {
+      "id": 2,
+      "name": "PlayStation 5 Slim Console",
+      "description": "PlayStation 5 Slim Console with 825 GB storage capacity",
+      "price": "449.99",
+      "stock": 37,
+      "category": {
+        "id": 1,
+        "name": "Electronics"
+      }
+    },
+    {
+      "id": 3,
+      "name": "Nugget Ice Maker",
+      "description": "Ultra Nugget Ice Maker with Side Tank and Scale Inhibiting Filter",
+      "price": "59.99",
+      "stock": 50,
+      "category": {
+        "id": 1,
+        "name": "Electronics"
+      }
+    }
+  ]
+}

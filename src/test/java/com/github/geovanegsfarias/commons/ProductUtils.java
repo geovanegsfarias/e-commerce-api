@@ -20,7 +20,7 @@ public class ProductUtils {
         return Product.builder()
                 .name("Wireless headphones")
                 .description("Noise-canceling wireless headphones")
-                .price(BigDecimal.valueOf(299.90))
+                .price(new BigDecimal("299.90"))
                 .stock(25)
                 .category(category)
                 .build();
@@ -33,7 +33,7 @@ public class ProductUtils {
                 .id(1L)
                 .name("Wireless headphones")
                 .description("Noise-canceling wireless headphones")
-                .price(BigDecimal.valueOf(299.90))
+                .price(new BigDecimal("299.90"))
                 .stock(25)
                 .category(category)
                 .build();
@@ -46,7 +46,7 @@ public class ProductUtils {
                 .id(1L)
                 .name("Wireless headphones")
                 .description("Noise-canceling wireless headphones")
-                .price(BigDecimal.valueOf(299.90))
+                .price(new BigDecimal("299.90"))
                 .stock(25)
                 .category(category)
                 .build();
@@ -54,7 +54,7 @@ public class ProductUtils {
                 .id(2L)
                 .name("PlayStation 5 Slim Console")
                 .description("PlayStation 5 Slim Console with 825 GB storage capacity")
-                .price(BigDecimal.valueOf(449.99))
+                .price(new BigDecimal("449.99"))
                 .stock(37)
                 .category(category)
                 .build();
@@ -62,7 +62,7 @@ public class ProductUtils {
                 .id(3L)
                     .name("Nugget Ice Maker")
                 .description("Ultra Nugget Ice Maker with Side Tank and Scale Inhibiting Filter")
-                .price(BigDecimal.valueOf(59.99))
+                .price(new BigDecimal("59.99"))
                 .stock(50)
                 .category(category)
                 .build();
