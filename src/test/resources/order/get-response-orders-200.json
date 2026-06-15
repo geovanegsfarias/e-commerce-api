@@ -1,0 +1,19 @@
+{
+  "content": [
+    {
+      "id": 1,
+      "userId": 1,
+      "status": "PENDING",
+      "createdAt": "2026-06-11T21:00:00Z",
+      "orderItems": [
+        {
+          "productId": 1,
+          "productName": "Wireless headphones",
+          "price": "299.90",
+          "quantity": 5
+        }
+      ],
+      "totalPrice": "1499.50"
+    }
+  ]
+}

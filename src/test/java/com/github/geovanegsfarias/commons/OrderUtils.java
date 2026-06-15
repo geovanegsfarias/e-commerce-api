@@ -24,7 +24,7 @@ public class OrderUtils {
 
         var order = Order.builder()
                 .id(1L)
-                .price(BigDecimal.valueOf(1499.50))
+                .price(new BigDecimal("1499.50"))
                 .date(Instant.parse("2026-06-11T21:00:00Z"))
                 .user(user)
                 .status(OrderStatus.PENDING)
