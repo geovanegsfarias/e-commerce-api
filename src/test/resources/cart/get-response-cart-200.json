@@ -1,0 +1,14 @@
+{
+  "id": 1,
+  "userId": 1,
+  "items": [
+    {
+      "id": 1,
+      "productId": 1,
+      "productName": "Wireless headphones",
+      "price": "299.90",
+      "quantity": 5
+    }
+  ],
+  "totalPrice": "1499.50"
+}

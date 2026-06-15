@@ -26,6 +26,6 @@ public interface CartMapper {
         return cartItems.stream()
                 .map(item -> item.getProduct().getPrice()
                         .multiply(BigDecimal.valueOf(item.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .reduce(BigDecimal.ZERO.setScale(2), BigDecimal::add);
     }
 }
